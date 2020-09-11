@@ -1,0 +1,11 @@
+version: 0.2
+phases:
+  build:
+    commands:
+      - echo Started build for last commit $CODEBUILD_SOURCE_VERSION
+      - git log -1 HEAD
+      - echo Start build phase `date`
+      - cd $CODEBUILD_SRC_DIR
+      - echo zip Source code to file=$SOURCE_OBJECT_KEY and upload it to bucket=$SOURCE_OUTPUT_BUCKET
+      - zip -qr $SOURCE_OBJECT_KEY .git $FOLDER_TO_INCLUDE
+      - aws s3 cp $CODEBUILD_SRC_DIR/$SOURCE_OBJECT_KEY s3://$SOURCE_OUTPUT_BUCKET/$SOURCE_OBJECT_KEY

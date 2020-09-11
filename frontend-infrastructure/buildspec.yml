@@ -1,0 +1,32 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: openjdk8.x
+      nodejs: 10
+    commands:
+      - echo Build started on `date`
+      - cd $CODEBUILD_SRC_DIR
+      - cd frontend-infrastructure
+      - echo installing aws cdk..
+      - npm install aws-cdk -g
+    finally:
+      - pwd
+  build:
+    commands:
+      - echo Building cdk infra for frontend..
+      - mvn clean install --quiet
+      - cdk synth serverless-web-application-frontend > template.yml
+
+artifacts:
+  type: zip
+  paths:
+    - frontend/**/*
+    - frontend-infrastructure/cdk.out/**/*
+    - frontend-infrastructure/template.yml
+    - frontend-infrastructure/deployspec.yml
+
+cache:
+  paths:
+    - '/root/.m2/**/*'

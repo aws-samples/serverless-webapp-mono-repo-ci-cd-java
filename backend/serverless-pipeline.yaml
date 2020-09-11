@@ -1,0 +1,427 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: >-
+  This serverless app sets up an AWS CodePipeline Pipeline as a CD solution for a GitHub-based SAM project. Once setup, every time the specified GitHub repository branch is updated, the change will flow through the CodePipeline pipeline.
+
+Parameters:
+  GitHubOwner:
+    Description: GitHub username owning the repo
+    Type: String
+    Default: 'pankajagrawal16'
+  GitHubRepo:
+    Description: GitHub repo name
+    Type: String
+    Default: 'serverless-webapp-mono-repo-ci-cd-java'
+  GitHubBranch:
+    Description: GitHub repo branch name. It defaults to master if not specified.
+    Type: String
+    Default: master
+  DeployStackName:
+    Description: The stack name for the deploy stage
+    Type: String
+    Default: "serverless-web-application-backend"
+  ManualApproval:
+    Description: Wait for approval before deploying?
+    Type: String
+    Default: "false"
+  BuildSpecFilePath:
+    Description: >-
+      Relative BuildSpec file path for build stage. For more information, see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html
+    Type: String
+    Default: 'backend/buildspec.yml'
+
+Conditions:
+  NeedsApproval: !Equals [ !Ref ManualApproval, "true" ]
+
+Resources:
+  Artifacts:
+    Type: AWS::S3::Bucket
+    Properties:
+      LifecycleConfiguration:
+        Rules:
+          - ExpirationInDays: 30
+            Status: Enabled
+      VersioningConfiguration:
+        Status: Enabled
+
+  ArtifactBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+
+    Properties:
+      Bucket: !Ref Artifacts
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Sid: "ServerlessApp"
+            Effect: Allow
+            Action:
+              - s3:GetObject
+            Resource:
+              - !Sub arn:${AWS::Partition}:s3:::${Artifacts}/*
+            Principal:
+              Service:
+                - serverlessrepo.amazonaws.com
+
+  PipelineRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Description: !Sub "Used by CodePipeline. Created by CloudFormation ${AWS::StackId}"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - "codepipeline.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Policies:
+        - PolicyName: s3-access
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "s3:DeleteObject"
+                  - "s3:GetObject*"
+                  - "s3:GetObjectVersion"
+                  - "s3:PutObject"
+                  - s3:PutObjectVersion
+                Resource:
+                  - !Sub arn:${AWS::Partition}:s3:::${Artifacts}/*
+              - Effect: Allow
+                Action:
+                  - "s3:GetBucketVersioning"
+                  - "s3:ListBucket"
+                  - "s3:GetBucketPolicy"
+                Resource:
+                  - !Sub arn:${AWS::Partition}:s3:::${Artifacts}
+        - PolicyName: codebuild-access
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "codebuild:StartBuild"
+                  - "codebuild:BatchGetBuilds"
+                Resource:
+                  - !GetAtt BuildProject.Arn
+        - PolicyName: deploy-cloudformation-access
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "cloudformation:DescribeStacks"
+                  - "cloudformation:CreateChangeSet"
+                  - "cloudformation:ExecuteChangeSet"
+                  - "cloudformation:DescribeChangeSet"
+                Resource:
+                  - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${DeployStackName}/*
+        - PolicyName: deploy-iam-access
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "iam:PassRole"
+                Resource:
+                  - !GetAtt CloudFormationExecutionRole.Arn
+
+  CloudFormationExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          Action:
+            - 'sts:AssumeRole'
+          Effect: Allow
+          Principal:
+            Service:
+              - cloudformation.amazonaws.com
+      Path: /
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AdministratorAccess'
+
+  BuildProjectRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Description: !Sub "Used in CodeBuild project. Created by CloudFormation ${AWS::StackId}"
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - codebuild.amazonaws.com
+        Version: '2012-10-17'
+      Path: /service-role/
+
+  DeployStagePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Sub deploy-stage-access-${AWS::StackName}
+      Roles:
+        - !Ref CloudFormationExecutionRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Action:
+              - s3:GetObject
+            Effect: Allow
+            Resource:
+              - !Sub arn:${AWS::Partition}:s3:::${Artifacts}/*
+
+  AmazonCloudWatchEventRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - events.amazonaws.com
+            Action: sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: cwe-pipeline-execution
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: codepipeline:StartPipelineExecution
+                Resource: !Join [ '', [ 'arn:aws:codepipeline:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref Pipeline ] ]
+
+  AmazonCloudWatchEventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      EventPattern:
+        source:
+          - aws.s3
+        detail-type:
+          - 'AWS API Call via CloudTrail'
+        detail:
+          eventSource:
+            - s3.amazonaws.com
+          eventName:
+            - CopyObject
+            - PutObject
+            - CompleteMultipartUpload
+          requestParameters:
+            bucketName:
+              - !Ref Artifacts
+            key:
+              - backend-source.zip
+      Targets:
+        - Arn:
+            !Join [ '', [ 'arn:aws:codepipeline:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref Pipeline ] ]
+          RoleArn: !GetAtt AmazonCloudWatchEventRole.Arn
+          Id: codepipeline-AppPipeline
+
+  AWSCloudTrailBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref AWSCloudTrailBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: AWSCloudTrailAclCheck
+            Effect: Allow
+            Principal:
+              Service:
+                - cloudtrail.amazonaws.com
+            Action: s3:GetBucketAcl
+            Resource: !GetAtt AWSCloudTrailBucket.Arn
+          - Sid: AWSCloudTrailWrite
+            Effect: Allow
+            Principal:
+              Service:
+                - cloudtrail.amazonaws.com
+            Action: s3:PutObject
+            Resource: !Join [ '', [ !GetAtt AWSCloudTrailBucket.Arn, '/AWSLogs/', !Ref 'AWS::AccountId', '/*' ] ]
+            Condition:
+              StringEquals:
+                s3:x-amz-acl: bucket-owner-full-control
+
+  AWSCloudTrailBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+
+  AwsCloudTrail:
+    DependsOn:
+      - AWSCloudTrailBucketPolicy
+      - Artifacts
+    Type: AWS::CloudTrail::Trail
+    Properties:
+      S3BucketName: !Ref AWSCloudTrailBucket
+      EventSelectors:
+        - DataResources:
+            - Type: AWS::S3::Object
+              Values:
+                - !Join [ '', [ !GetAtt Artifacts.Arn, '/backend-source.zip'] ]
+          ReadWriteType: WriteOnly
+      IncludeGlobalServiceEvents: true
+      IsLogging: true
+      IsMultiRegionTrail: true
+
+  DetectorBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: WebAppBackendPipelineDetector
+      ServiceRole: !GetAtt BuildProjectRole.Arn
+      Source:
+        Auth:
+          Type: OAUTH
+        Type: GITHUB
+        Location: !Sub https://github.com/${GitHubOwner}/${GitHubRepo}.git
+        GitCloneDepth: 0
+        BuildSpec: buildspec-copyartifact.yaml
+      Triggers:
+        Webhook: true
+        FilterGroups:
+          - - Type: EVENT
+              Pattern: PUSH
+            - Type: FILE_PATH
+              Pattern: backend/
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: 'aws/codebuild/standard:4.0'
+        Type: LINUX_CONTAINER
+        EnvironmentVariables:
+          - Name: SOURCE_OBJECT_KEY
+            Value: backend-source.zip
+          - Name: SOURCE_OUTPUT_BUCKET
+            Value: !Ref Artifacts
+          - Name: FOLDER_TO_INCLUDE
+            Value: backend
+      Artifacts:
+        Type: NO_ARTIFACTS
+      SourceVersion: refs/heads/master
+
+  BuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: WebAplicationBackendBuild
+      ServiceRole: !GetAtt BuildProjectRole.Arn
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: !Ref BuildSpecFilePath
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: 'aws/codebuild/standard:4.0'
+        Type: LINUX_CONTAINER
+        EnvironmentVariables:
+          - Name: PACKAGE_BUCKET
+            Value: !Ref Artifacts
+
+  Pipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      Name: WebApplicationBackendPipeline
+      ArtifactStore:
+        Location: !Ref Artifacts
+        Type: S3
+      RoleArn: !GetAtt PipelineRole.Arn
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: S3Source
+              ActionTypeId:
+                Category: Source
+                Owner: AWS
+                Provider: S3
+                Version: "1"
+              Configuration:
+                S3Bucket: !Ref Artifacts
+                S3ObjectKey: backend-source.zip
+                PollForSourceChanges: false
+              OutputArtifacts:
+                - Name: SourceArtifact
+        - Name: Build
+          Actions:
+            - Name: Build
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: "1"
+              Configuration:
+                ProjectName: !Ref BuildProject
+              InputArtifacts:
+                - Name: SourceArtifact
+              OutputArtifacts:
+                - Name: BuildArtifact
+        - Name: Deploy
+          Actions:
+            - Name: CreateChangeSet
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: '1'
+              InputArtifacts:
+                - Name: BuildArtifact
+              Configuration:
+                ActionMode: CHANGE_SET_REPLACE
+                Capabilities: CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND
+                RoleArn: !GetAtt CloudFormationExecutionRole.Arn
+                StackName: !Ref DeployStackName
+                TemplatePath: "BuildArtifact::packaged-template.yml"
+                ChangeSetName: !Sub a-${DeployStackName}-Deploy
+              RunOrder: 1
+            - !If
+              - NeedsApproval
+              - Name: ManualApproval
+                ActionTypeId:
+                  Category: Approval
+                  Owner: AWS
+                  Provider: Manual
+                  Version: '1'
+                RunOrder: 2
+              - !Ref AWS::NoValue
+            - Name: ExecuteChangeSet
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: '1'
+              Configuration:
+                ActionMode: CHANGE_SET_EXECUTE
+                StackName: !Ref DeployStackName
+                ChangeSetName: !Sub a-${DeployStackName}-Deploy
+              RunOrder: 3
+
+  CodeBuildPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Sub codebuild-access-${AWS::StackName}
+      Roles:
+        - !Ref BuildProjectRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Effect: Allow
+            Resource:
+              - !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/*
+          - Action:
+              - s3:PutObject
+              - s3:GetObject
+              - s3:GetObjectVersion
+            Effect: Allow
+            Resource:
+              - !Sub arn:${AWS::Partition}:s3:::${Artifacts}/*
+          - Action:
+              - s3:ListBucket
+            Effect: Allow
+            Resource:
+              - !Sub arn:${AWS::Partition}:s3:::${Artifacts}

@@ -1,0 +1,19 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      python: 3.8
+  pre_build:
+    commands:
+      - apt-get update -qq
+      - pip install aws-sam-cli
+  build:
+    commands:
+      - cd $CODEBUILD_SRC_DIR
+      - cd backend
+      - sam build -t template.yaml
+      - sam package --template-file .aws-sam/build/template.yaml --s3-prefix web-app --s3-bucket $PACKAGE_BUCKET --output-template-file packaged-template.yml
+artifacts:
+  discard-paths: yes
+  files:
+    - backend/packaged-template.yml
