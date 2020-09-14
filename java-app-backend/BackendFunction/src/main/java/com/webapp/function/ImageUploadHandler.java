@@ -1,7 +1,7 @@
 package com.webapp.function;
 
 import java.net.URL;
-import java.util.Date;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -10,23 +10,21 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 import software.amazon.lambda.powertools.logging.PowertoolsLogging;
 import software.amazon.lambda.powertools.tracing.PowertoolsTracing;
-
-import static java.time.ZonedDateTime.now;
 
 public class ImageUploadHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger LOG = LogManager.getLogger(ImageUploadHandler.class);
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    private static final AmazonS3 client = AmazonS3ClientBuilder.standard()
-            .build();
+    private static final S3Presigner client = S3Presigner.create();
 
     private static final String S3_BUCKET = System.getenv("UploadBucket");
 
@@ -53,16 +51,24 @@ public class ImageUploadHandler implements RequestHandler<APIGatewayProxyRequest
         LOG.debug("File path to be saved {} in bucket {}", imagePath, S3_BUCKET);
         LOG.debug("Received metadata {}", personName);
 
-        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(S3_BUCKET, imagePath)
-                .withContentType(contentType)
-                .withExpiration(Date.from(now().plusMinutes(1).toInstant()));
+        HashMap<String, String> metaData = new HashMap<>();
+        metaData.put("fullname", personName);
 
-        generatePresignedUrlRequest.addRequestParameter("fullname", personName);
+        PutObjectPresignRequest preSignRequest = PutObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(1))
+                .putObjectRequest(PutObjectRequest.builder()
+                        .contentType(contentType)
+                        .bucket(S3_BUCKET)
+                        .key(imagePath)
+                        .metadata(metaData)
+                        .build())
+                .build();
 
-        URL url = client.generatePresignedUrl(generatePresignedUrlRequest);
-        LOG.debug("Generated pre signed url {}", url);
+        PresignedPutObjectRequest requestObject = client.presignPutObject(preSignRequest);
 
-        return response(apiGatewayProxyResponseEvent, fileName, url);
+        LOG.debug("Generated pre signed url {}", requestObject.url());
+
+        return response(apiGatewayProxyResponseEvent, fileName, requestObject.url());
     }
 
     @PowertoolsTracing
