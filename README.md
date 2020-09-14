@@ -24,16 +24,29 @@ we return the metadata.
 
 Assuming your region is `eu-west-1`, run below commands. Replace region value with your workload region.
 
-- Create backend CI/CD pipelines for deploying backend resource via cloudformation. 
+- Create backend CI/CD pipelines for deploying backend resource via cloudformation.  You can either choose 
+to deploy backend in python or in java. Both are deployed via SAM.
+
+###### Java Backend
+```
+    aws cloudformation create-stack --stack-name serverless-web-application-java-backend-pipeline --template-body file://java-app-backend/serverless-pipeline.yaml --capabilities CAPABILITY_AUTO_EXPAND CAPABILITY_IAM --region eu-west-1
+```
+
+- Trigger Code build for deploying java backend resources via pipeline. It will use SAM to deploy serverless backend stack.
 
 ```
-    aws cloudformation create-stack --stack-name serverless-web-application-backend-pipeline --template-body file://backend/serverless-pipeline.yaml --capabilities CAPABILITY_AUTO_EXPAND CAPABILITY_IAM --region eu-west-1
+    aws codebuild start-build --project-name WebAppJavaBackendPipelineDetector --region eu-west-1
+``` 
+
+###### Python Backend
+```
+    aws cloudformation create-stack --stack-name serverless-web-application-python-backend-pipeline --template-body file://python-app-backend/serverless-pipeline.yaml --capabilities CAPABILITY_AUTO_EXPAND CAPABILITY_IAM --region eu-west-1
 ```
 
-- Trigger Code build for deploying backend resources via pipeline. It will use SAM to deploy serverless backend stack.
+- Trigger Code build for deploying python backend resources via pipeline. It will use SAM to deploy serverless backend stack.
 
 ```
-    aws codebuild start-build --project-name WebAppBackendPipelineDetector --region eu-west-1
+    aws codebuild start-build --project-name WebAppPythonBackendPipelineDetector --region eu-west-1
 ``` 
 
 - After this step, codepipeline should take care of deploying your backend resources. If you choose to deploy with manual approval step, Navigate to [pipeline](https://eu-west-1.console.aws.amazon.com/codesuite/codepipeline/pipelines/WebApplicationBackendPipeline/view?region=eu-west-1) 
