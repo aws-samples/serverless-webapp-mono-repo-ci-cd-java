@@ -38,7 +38,8 @@ import software.amazon.awscdk.services.sns.subscriptions.EmailSubscription;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static software.amazon.awscdk.services.codebuild.LinuxBuildImage.STANDARD_3_0;
+import static software.amazon.awscdk.services.codebuild.ComputeType.LARGE;
+import static software.amazon.awscdk.services.codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM;
 import static software.amazon.awscdk.services.codepipeline.actions.CodeBuildActionType.BUILD;
 
 public class FrontEndPipelineStack extends Stack {
@@ -99,8 +100,8 @@ public class FrontEndPipelineStack extends Stack {
                 .description("Detects if frontend or frontend infra is updated. It will then invoke frontend pipeline")
                 .buildSpec(BuildSpec.fromSourceFilename("buildspec-copyartifact.yaml"))
                 .environment(BuildEnvironment.builder()
-                        .computeType(ComputeType.SMALL)
-                        .buildImage(STANDARD_3_0)
+                        .computeType(LARGE)
+                        .buildImage(AMAZON_LINUX_2_ARM)
                         .build())
                 .source(Source.gitHub(GitHubSourceProps.builder()
                         .cloneDepth(0)
@@ -135,7 +136,8 @@ public class FrontEndPipelineStack extends Stack {
                 .description("Builds frontend website")
                 .buildSpec(BuildSpec.fromSourceFilename(contextValue("frontend_build_spec")))
                 .environment(BuildEnvironment.builder()
-                        .buildImage(STANDARD_3_0)
+                        .computeType(LARGE)
+                        .buildImage(AMAZON_LINUX_2_ARM)
                         .build())
                 .build();
 
@@ -144,7 +146,8 @@ public class FrontEndPipelineStack extends Stack {
                 .description("Builds frontend infrastructure")
                 .buildSpec(BuildSpec.fromSourceFilename(contextValue("frontend_infra_build_spec")))
                 .environment(BuildEnvironment.builder()
-                        .buildImage(STANDARD_3_0)
+                        .computeType(LARGE)
+                        .buildImage(AMAZON_LINUX_2_ARM)
                         .build())
                 .build();
 
@@ -160,7 +163,8 @@ public class FrontEndPipelineStack extends Stack {
                 .description("Deploys frontend infrastructure and website")
                 .buildSpec(BuildSpec.fromSourceFilename(contextValue("frontend_infra_deploy_spec")))
                 .environment(BuildEnvironment.builder()
-                        .buildImage(STANDARD_3_0)
+                        .computeType(LARGE)
+                        .buildImage(AMAZON_LINUX_2_ARM)
                         .build())
                 .build();
 

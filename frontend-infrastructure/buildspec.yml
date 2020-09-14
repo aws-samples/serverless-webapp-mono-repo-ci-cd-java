@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      java: openjdk8.x
+      java: corretto8
       nodejs: 10
     commands:
       - echo Build started on `date`

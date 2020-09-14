@@ -1,13 +1,13 @@
 version: 0.2
+
 phases:
   install:
     runtime-versions:
       python: 3.8
-      java: openjdk8.x
+      java: corretto8
 
   pre_build:
     commands:
-      - apt-get update -qq
       - pip install aws-sam-cli
   build:
     commands:

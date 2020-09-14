@@ -288,7 +288,7 @@ Resources:
             - Type: FILE_PATH
               Pattern: python-app-backend/
       Environment:
-        ComputeType: BUILD_GENERAL1_SMALL
+        ComputeType: BUILD_GENERAL1_LARGE
         Image: 'aws/codebuild/standard:4.0'
         Type: LINUX_CONTAINER
         EnvironmentVariables:
@@ -313,7 +313,7 @@ Resources:
       Artifacts:
         Type: CODEPIPELINE
       Environment:
-        ComputeType: BUILD_GENERAL1_SMALL
+        ComputeType: BUILD_GENERAL1_LARGE
         Image: 'aws/codebuild/standard:4.0'
         Type: LINUX_CONTAINER
         EnvironmentVariables:

@@ -288,8 +288,8 @@ Resources:
             - Type: FILE_PATH
               Pattern: java-app-backend/
       Environment:
-        ComputeType: BUILD_GENERAL1_SMALL
-        Image: 'aws/codebuild/standard:4.0'
+        ComputeType: BUILD_GENERAL1_LARGE
+        Image: 'aws/codebuild/amazonlinux2-x86_64-standard:3.0'
         Type: LINUX_CONTAINER
         EnvironmentVariables:
           - Name: SOURCE_OBJECT_KEY
@@ -313,8 +313,8 @@ Resources:
       Artifacts:
         Type: CODEPIPELINE
       Environment:
-        ComputeType: BUILD_GENERAL1_SMALL
-        Image: 'aws/codebuild/standard:4.0'
+        ComputeType: BUILD_GENERAL1_LARGE
+        Image: 'aws/codebuild/amazonlinux2-x86_64-standard:3.0'
         Type: LINUX_CONTAINER
         EnvironmentVariables:
           - Name: PACKAGE_BUCKET
