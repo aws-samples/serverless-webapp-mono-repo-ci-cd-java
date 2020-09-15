@@ -8,6 +8,6 @@
     "approval_emails": "",
     "owner": "aws-samples",
     "repo": "serverless-webapp-mono-repo-ci-cd-java",
-    "cert_domain": ""
+    "cert_domain": "pankaagr.cloud"
   }
 }
