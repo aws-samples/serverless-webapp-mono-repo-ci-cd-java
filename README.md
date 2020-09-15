@@ -1,5 +1,7 @@
 # serverless-webapp-ci-cd-java
 
+__Status__: _Work-in-progress. Please create issues or pull requests if you have ideas for improvement._
+
 Use AWS Serverless stack to build a full fledged web application with both
 backend and frontend hosted inside a same mono repo.
 
@@ -9,15 +11,16 @@ Frontend CI/CD pipeline and infrastructure is written using CDK Java.
 Application builds a React static web app, which talks to bunch of APIs hosted via API gateway and talking to 
 lambda functions, S3 and dynamoDB as backends. Feature of web application itself is simple. Since that is not the main 
 purpose here.  User can basically upload an image with a metadata. Then if user want, they can try uploading 
-another image from another flow, and try to find it face in it. If its found in Dynamo DB, then
+another image from another flow, and try to find face in it. If its found in Dynamo DB, then
 we return the metadata. 
 
 ## Architecture diagram for the application
 
 ![Architecture Diagram](frontend/public/serverless-webapp-mono-repo-ci-cd-java.png)
 
-## Configuration
+## Pre requisite
 
+Make sure you have [aws cli](https://github.com/aws/aws-cli#getting-started) installed and configured with an aws account you want to use.
 
 
 ## Creating backend
@@ -53,7 +56,7 @@ to deploy backend in python or in java. Both are deployed via SAM.
 and approve to deploy the stack.
 
 
-## Creating fronted
+## Creating frontend
 
 Assuming your region is `eu-west-1`, run below commands. Replace region value with your workload region.
 
@@ -68,13 +71,17 @@ leave `cert_domain` as empty string. Leaving `approval_emails` as empty won't cr
 
 ```
     cd frontend-infrastructure/
-  
+```
+```  
     maven clean install
-
+```
+```
     cdk synth serverless-web-application-frontend-pipeline --region eu-west-1
-
+```
+```
     cdk bootstrap
-
+```
+```
     cdk deploy serverless-web-application-frontend-pipeline --region eu-west-1 --require-approval never
 ```
 

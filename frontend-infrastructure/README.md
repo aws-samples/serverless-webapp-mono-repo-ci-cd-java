@@ -1,4 +1,4 @@
-# Welcome to your CDK Java project for creating and deploying your fronend website!
+# Welcome to your CDK Java project for creating and deploying your frontend website!
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 

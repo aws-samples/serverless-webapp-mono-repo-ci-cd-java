@@ -10,5 +10,5 @@ export const Links_List = [
     {label: 'AWS Serverless Application Model', link: 'https://aws.amazon.com/serverless/sam/'},
     {label: 'AWS Cloud Development Kit (AWS CDK)', link: 'https://docs.aws.amazon.com/cdk/latest/guide/work-with-cdk-java.html'},
     {label: 'Learn more about AWS developer tools services?', link: 'https://aws.amazon.com/products/developer-tools/'},
-    {label: 'Connect with me @', link: 'https://www.linkedin.com/in/pankajagrawal16/'},
+    {label: 'Connect with me @agrawalpankaj16', link: 'https://twitter.com/agrawalpankaj16'},
 ];
