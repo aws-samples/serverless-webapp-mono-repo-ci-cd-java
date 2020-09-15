@@ -1,0 +1,17 @@
+version: 2
+updates:
+  - package-ecosystem: "maven"
+    directory: "/frontend-infrastructure"
+    schedule:
+      interval: "daily"
+    labels:
+      - "maven"
+      - "dependencies"
+
+  - package-ecosystem: "maven"
+    directory: "/java-app-backend/BackendFunction"
+    schedule:
+      interval: "daily"
+    labels:
+      - "maven"
+      - "dependencies"
