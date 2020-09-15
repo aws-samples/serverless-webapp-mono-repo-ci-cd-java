@@ -27,7 +27,7 @@ import static software.amazon.lambda.powertools.tracing.PowerTracer.*;
 public class IndexImageHandler implements RequestHandler<S3EventNotification, IndexFacesResponse> {
     private static final Logger LOG = LogManager.getLogger(IndexImageHandler.class);
 
-    private static final String COLLECTION_ID = System.getenv("CollectionName");
+    private static final String COLLECTION_ID = System.getenv("CollectionId");
     private static final String TABLE_NAME = System.getenv("TableName");
 
     private static final RekognitionClient rekognitionClient = RekognitionClient.create();

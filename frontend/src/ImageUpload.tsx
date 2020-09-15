@@ -47,7 +47,7 @@ const ImageUpload: React.FunctionComponent = () => {
             .then(res => res.json())
             .then(
                 (result) => {
-                    submitImage(result);
+                    submitImage(result, dataToGetUrl.type, dataToGetUrl.name);
                 },
                 (error) => {
                     console.log(error);
@@ -59,10 +59,14 @@ const ImageUpload: React.FunctionComponent = () => {
         )
     };
 
-    const submitImage = (result: Result) => {
+    const submitImage = (result: Result, contentType: string, name: string) => {
         const putMethod = {
             method: 'PUT',
             body: picture,
+            headers: {
+                'Content-Type': contentType,
+                'x-amz-meta-fullname': name,
+            },
         };
 
         if(result.uploadURL) {

@@ -14,10 +14,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
-import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 import software.amazon.lambda.powertools.logging.PowertoolsLogging;
 import software.amazon.lambda.powertools.tracing.PowertoolsTracing;
 
@@ -33,6 +31,9 @@ public class ImageUploadHandler implements RequestHandler<APIGatewayProxyRequest
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
         APIGatewayProxyResponseEvent apiGatewayProxyResponseEvent = new APIGatewayProxyResponseEvent();
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Access-Control-Allow-Origin", "*");
+        apiGatewayProxyResponseEvent.withHeaders(headers);
 
         String contentType = input.getQueryStringParameters().getOrDefault("content-type", "");
         String fileExtension = input.getQueryStringParameters().getOrDefault("file-extension", "");
@@ -54,34 +55,27 @@ public class ImageUploadHandler implements RequestHandler<APIGatewayProxyRequest
         HashMap<String, String> metaData = new HashMap<>();
         metaData.put("fullname", personName);
 
-        PutObjectPresignRequest preSignRequest = PutObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofMinutes(1))
-                .putObjectRequest(PutObjectRequest.builder()
-                        .contentType(contentType)
-                        .bucket(S3_BUCKET)
-                        .key(imagePath)
-                        .metadata(metaData)
-                        .build())
-                .build();
-
-        PresignedPutObjectRequest requestObject = client.presignPutObject(preSignRequest);
+        PresignedPutObjectRequest requestObject = client.presignPutObject(req ->
+                req.putObjectRequest(obj ->
+                        obj.metadata(metaData)
+                                .bucket(S3_BUCKET)
+                                .key(imagePath)
+                                .contentType(contentType)).signatureDuration(Duration.ofSeconds(60)));
 
         LOG.debug("Generated pre signed url {}", requestObject.url());
+        LOG.debug("Generated pre signed details meta {}", requestObject.signedHeaders());
+
 
         return response(apiGatewayProxyResponseEvent, fileName, requestObject.url());
     }
 
     @PowertoolsTracing
-    private APIGatewayProxyResponseEvent response(APIGatewayProxyResponseEvent apiGatewayProxyResponseEvent,
-                                                  String fileName,
-                                                  URL url) {
-        Map<String, String> headers = new HashMap<>();
-        headers.put("Access-Control-Allow-Origin", "*");
-
+    private APIGatewayProxyResponseEvent response(final APIGatewayProxyResponseEvent apiGatewayProxyResponseEvent,
+                                                  final String fileName,
+                                                  final URL url) {
         try {
             return apiGatewayProxyResponseEvent
                     .withStatusCode(200)
-                    .withHeaders(headers)
                     .withBody(OBJECT_MAPPER.writeValueAsString(new ResponseBody(url.toString(), fileName)));
         } catch (JsonProcessingException e) {
             LOG.error("Failed sending response", e);
