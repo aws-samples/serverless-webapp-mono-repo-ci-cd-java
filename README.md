@@ -1,6 +1,8 @@
-# serverless-webapp-ci-cd-java
+# serverless-webapp-ci-cd-java  
 
 __Status__: _Work-in-progress. Please create issues or pull requests if you have ideas for improvement._
+
+:heart:  Backend is powered by [aws-lambda-powertools-java](https://github.com/awslabs/aws-lambda-powertools-java) and [aws-lambda-powertools-python](https://github.com/awslabs/aws-lambda-powertools-python)
 
 Use AWS Serverless stack to build a full fledged web application with both
 backend and frontend hosted inside a same mono repo.
@@ -23,7 +25,9 @@ we return the metadata.
 Make sure you have [aws cli](https://github.com/aws/aws-cli#getting-started) installed and configured with an aws account you want to use.
 
 
-## Creating backend
+## Creating backend with Full CI/CD pipeline
+
+_Note:_ If you wish to provision backend without CI/CD, refer instructions [here](#creating-backend-without-full-cicd-pipelinemanually) 
 
 Assuming your region is `eu-west-1`, run below commands. Replace region value with your workload region.
 
@@ -31,6 +35,9 @@ Assuming your region is `eu-west-1`, run below commands. Replace region value wi
 to deploy backend in python or in java. Both are deployed via SAM.
 
 ###### Java Backend
+
+:heart:  Backend is powered by [aws-lambda-powertools-java](https://github.com/awslabs/aws-lambda-powertools-java)
+
 ```
     aws cloudformation create-stack --stack-name serverless-web-application-java-backend-pipeline --template-body file://java-app-backend/serverless-pipeline.yaml --capabilities CAPABILITY_AUTO_EXPAND CAPABILITY_IAM --region eu-west-1
 ```
@@ -42,6 +49,9 @@ to deploy backend in python or in java. Both are deployed via SAM.
 ``` 
 
 ###### Python Backend
+
+:heart:  Backend is powered by [aws-lambda-powertools-python](https://github.com/awslabs/aws-lambda-powertools-python)
+
 ```
     aws cloudformation create-stack --stack-name serverless-web-application-python-backend-pipeline --template-body file://python-app-backend/serverless-pipeline.yaml --capabilities CAPABILITY_AUTO_EXPAND CAPABILITY_IAM --region eu-west-1
 ```
@@ -55,8 +65,9 @@ to deploy backend in python or in java. Both are deployed via SAM.
 - After this step, codepipeline should take care of deploying your backend resources. If you choose to deploy with manual approval step, Navigate to [pipeline](https://eu-west-1.console.aws.amazon.com/codesuite/codepipeline/pipelines/WebApplicationBackendPipeline/view?region=eu-west-1) 
 and approve to deploy the stack.
 
+## Creating frontend with full CI/CD pipeline
 
-## Creating frontend
+_Note:_ If you wish to provision frontend without CI/CD, refer instructions [here](#creating-backend-without-full-cicd-pipelinemanually)
 
 Assuming your region is `eu-west-1`, run below commands. Replace region value with your workload region.
 
@@ -99,6 +110,112 @@ provider.
 - After this step, codepipeline should take care of deploying your frontend resources. If you choose to deploy with manual approval step, Navigate to [pipeline](https://eu-west-1.console.aws.amazon.com/codesuite/codepipeline/pipelines/WebApplicationBackendPipeline/view?region=eu-west-1) 
 and approve to deploy the stack.
 
+
+## Creating backend without Full CI/CD pipeline(Manually)
+
+###### Java Backend
+
+```
+  cd java-app-backend/
+```
+```
+  sam build
+```
+- Run below command and pick default options. 
+```
+  sam deploy --guided --stack-name serverless-web-application-java-backend --capabilities CAPABILITY_AUTO_EXPAND CAPABILITY_IAM
+```
+
+###### Python Backend
+
+```
+  cd python-app-backend/
+```
+```
+  sam build
+```
+
+- Run below command and pick default options. 
+```
+  sam deploy --guided --stack-name serverless-web-application-python-backend --capabilities CAPABILITY_AUTO_EXPAND CAPABILITY_IAM
+```
+
+## Creating frontend without Full CI/CD pipeline(Manually)
+
+- After one of the backend is created successfully, update backend endpoints in [GlobalConstants](frontend/src/GlobalConstants.ts). 
+Backend endpoints can be found by navigating to [API gateway console](https://eu-west-1.console.aws.amazon.com/apigateway/main/apis?region=eu-west-1)
+
+- Revisit [cdk.json](frontend-infrastructure/cdk.json) for configurtion of frontend stack. `cert_domain`. 
+If you don't want to host on a custom domain, leave `cert_domain` as empty string. 
+
+- Build frontend code
+```
+  cd frontend/
+```
+```
+  yarn install
+ 
+  yarn build
+```
+
+- Build frontend infrastructure
+```
+  cd ../frontend-infrastructure/
+```
+```
+  mvn clean install
+```
+```
+  cdk synthesize serverless-web-application-frontend
+```
+```
+  cdk deploy serverless-web-application-frontend
+```
+
+- If you are using custom domain, make sure to register created named servers on Route53 hosted zone with your domain 
+provider.  
+
+## Cleanup resources
+
+Run below commands as applicable in order.
+
+###### Java Backend
+
+```
+    aws cloudformation delete-stack --stack-name serverless-web-application-java-backend --region eu-west-1
+```
+
+###### Python Backend
+
+```
+    aws cloudformation delete-stack --stack-name serverless-web-application-python-backend --region eu-west-1
+```
+
+- Clean frontend
+
+```
+    aws cloudformation delete-stack --stack-name serverless-web-application-frontend --region eu-west-1
+```
+
+- Clean up pipelines
+
+###### Java Backend pipeline
+
+```
+    aws cloudformation delete-stack --stack-name serverless-web-application-java-backend-pipeline --region eu-west-1
+```
+
+###### Python Backend pipeline
+
+```
+    aws cloudformation delete-stack --stack-name serverless-web-application-python-backend-pipeline --region eu-west-1
+```
+
+###### Frontend pipeline
+
+```
+    aws cloudformation delete-stack --stack-name serverless-web-application-frontend-pipeline --region eu-west-1
+```
 
 ## Security
 
