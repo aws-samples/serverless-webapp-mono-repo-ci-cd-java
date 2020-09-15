@@ -36,7 +36,7 @@ public class RecognizeImageHandler implements RequestHandler<APIGatewayProxyRequ
 
     @Override
     @PowertoolsLogging(logEvent = true, samplingRate = 0.5)
-    @PowertoolsTracing(namespace = "Recognition")
+    @PowertoolsTracing(namespace = "Recognition", captureResponse = false)
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
         String image = input.getBody();
 
@@ -77,7 +77,7 @@ public class RecognizeImageHandler implements RequestHandler<APIGatewayProxyRequ
                 return apiGatewayProxyResponseEvent
                         .withStatusCode(200)
                         .withBody("{\n" +
-                                "  \"person_name\": " + faceDetails.item().get("FullName").s() + "\n" +
+                                "  \"person_name\": \"" + faceDetails.item().get("FullName").s() + "\"\n" +
                                 "}");
             }
         }
@@ -89,7 +89,7 @@ public class RecognizeImageHandler implements RequestHandler<APIGatewayProxyRequ
                         "}");
     }
 
-    @PowertoolsTracing
+    @PowertoolsTracing(captureResponse = false)
     private GetItemResponse query(Map<String, AttributeValue> keyMap) {
         GetItemRequest itemRequest = GetItemRequest.builder()
                 .tableName(TABLE_NAME)
@@ -103,7 +103,7 @@ public class RecognizeImageHandler implements RequestHandler<APIGatewayProxyRequ
         }
     }
 
-    @PowertoolsTracing
+    @PowertoolsTracing(captureResponse = false)
     private List<FaceMatch> faceSearch(byte[] decodedImage) {
         try {
             SearchFacesByImageResponse searchFacesByImageResponse = rekognitionClient.searchFacesByImage(builder -> builder.collectionId(COLLECTION_ID)
