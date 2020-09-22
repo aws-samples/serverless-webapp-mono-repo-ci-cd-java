@@ -18,7 +18,7 @@ public class FrontendInfrastructureTest {
 
     @Test
     public void testStack() {
-        HashMap<String, String> context = new HashMap<>();
+        Map<String, Object> context = new HashMap<>();
         context.put("frontend_path", "../frontend");
 
         App app = new App(AppProps.builder()
