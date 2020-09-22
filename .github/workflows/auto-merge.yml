@@ -12,4 +12,4 @@ jobs:
         with:
           target: minor
           github-token: ${{ secrets.AUTOMERGE }}
-          auto-merge: true
+          approve: true
