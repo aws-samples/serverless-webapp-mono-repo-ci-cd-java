@@ -12,3 +12,5 @@ cdk.context.json
 .cdk.staging
 cdk.out
 
+/yarn.lock
+/node_modules/.yarn-integrity

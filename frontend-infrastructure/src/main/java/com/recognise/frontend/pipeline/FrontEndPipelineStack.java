@@ -8,6 +8,7 @@ import software.amazon.awscdk.core.Construct;
 import software.amazon.awscdk.core.Stack;
 import software.amazon.awscdk.core.StackProps;
 import software.amazon.awscdk.services.cloudtrail.ReadWriteType;
+import software.amazon.awscdk.services.cloudtrail.S3EventSelector;
 import software.amazon.awscdk.services.cloudtrail.Trail;
 import software.amazon.awscdk.services.codebuild.BuildEnvironment;
 import software.amazon.awscdk.services.codebuild.BuildEnvironmentVariable;
@@ -75,7 +76,10 @@ public class FrontEndPipelineStack extends Stack {
 
         String sourceZip = "frontend-source.zip";
 
-        frontEndTrail.addS3EventSelector(singletonList(frontEndArtifactBucket.getBucketArn() + "/" + sourceZip));
+        frontEndTrail.addS3EventSelector(singletonList(S3EventSelector.builder()
+                .bucket(frontEndArtifactBucket)
+                .objectPrefix(sourceZip)
+                .build()));
 
         Artifact sourceOutput = Artifact.artifact("FrontEndSourceOutput");
         Artifact buildOutput = Artifact.artifact("FrontEndBuildOutput");
