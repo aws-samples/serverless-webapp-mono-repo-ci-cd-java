@@ -11,7 +11,7 @@ updates:
   - package-ecosystem: "maven"
     directory: "/java-app-backend/BackendFunction"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     labels:
       - "maven"
       - "dependencies"
