@@ -84,7 +84,7 @@
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>certificatemanager</artifactId>
-            <version>1.63.0</version>
+            <version>1.64.0</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
