@@ -43,7 +43,7 @@ public class RecognizeImageHandler implements RequestHandler<APIGatewayProxyRequ
     @Override
     @PowertoolsLogging(logEvent = true, samplingRate = 0.5)
     @PowertoolsTracing(namespace = "Recognition", captureResponse = false)
-    @PowertoolsMetrics(namespace = "Recognition", captureColdStart = true, raiseOnEmptyMetrics = true)
+    @PowertoolsMetrics(namespace = "Recognition", service = "FindImage", captureColdStart = true, raiseOnEmptyMetrics = true)
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
         String image = input.getBody();
 
