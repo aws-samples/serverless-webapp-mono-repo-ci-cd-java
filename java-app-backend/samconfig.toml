@@ -2,9 +2,10 @@ version = 0.1
 [default]
 [default.deploy]
 [default.deploy.parameters]
-stack_name = "java-app-backend"
-s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-2mzswssye9jw"
-s3_prefix = "app-backend-java"
-region = "us-east-1"
+stack_name = "serverless-web-application-java-backend"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1h3cz8gx124cn"
+s3_prefix = "serverless-web-application-java-backend"
+region = "eu-west-1"
 confirm_changeset = false
-capabilities = "CAPABILITY_IAqM"
+capabilities = "CAPABILITY_AUTO_EXPAND CAPABILITY_IAM"
+

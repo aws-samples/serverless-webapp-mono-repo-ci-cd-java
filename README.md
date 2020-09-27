@@ -132,7 +132,7 @@ and approve to deploy the stack.
   cd python-app-backend/
 ```
 ```
-  sam build
+  sam buildy
 ```
 
 - Run below command and pick default options. 

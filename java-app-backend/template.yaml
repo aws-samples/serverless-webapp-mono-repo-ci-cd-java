@@ -120,6 +120,7 @@ Resources:
         Variables:
           CollectionId: !Sub "${AWS::StackName}-collection"
           TableName: !Sub "${AWS::StackName}-table"
+          POWER_TOOLS_SERVICE_NAME: ImageRekognition
       Events:
         S3Event:
           Type: S3
@@ -208,6 +209,7 @@ Resources:
         Variables:
           UploadBucket: !Ref UploadBucket
           POWER_TOOLS_SERVICE_NAME: ImageUploadHandler
+          POWERTOOLS_METRICS_NAMESPACE: ImageUpload
       Policies:
         - S3CrudPolicy:
             BucketName: !Ref UploadBucket

@@ -245,3 +245,4 @@ $RECYCLE.BIN/
 
 # End of https://www.gitignore.io/api/osx,linux,python,windows,pycharm,visualstudiocode
 /python-app-backend/samconfig.toml
+/java-app-backend/BackendFunction/dependency-reduced-pom.xml

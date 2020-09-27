@@ -20,10 +20,16 @@ import software.amazon.awssdk.services.rekognition.RekognitionClient;
 import software.amazon.awssdk.services.rekognition.model.FaceMatch;
 import software.amazon.awssdk.services.rekognition.model.Image;
 import software.amazon.awssdk.services.rekognition.model.SearchFacesByImageResponse;
+import software.amazon.cloudwatchlogs.emf.model.Unit;
 import software.amazon.lambda.powertools.logging.PowertoolsLogging;
+import software.amazon.lambda.powertools.metrics.PowertoolsMetrics;
 import software.amazon.lambda.powertools.tracing.PowertoolsTracing;
 
 import static java.util.Collections.emptyList;
+import static software.amazon.lambda.powertools.metrics.PowertoolsMetricsLogger.metricsLogger;
+import static software.amazon.lambda.powertools.metrics.PowertoolsMetricsLogger.withSingleMetric;
+import static software.amazon.lambda.powertools.tracing.PowerTracer.putAnnotation;
+import static software.amazon.lambda.powertools.tracing.PowerTracer.putMetadata;
 
 public class RecognizeImageHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger LOG = LogManager.getLogger(RecognizeImageHandler.class);
@@ -37,6 +43,7 @@ public class RecognizeImageHandler implements RequestHandler<APIGatewayProxyRequ
     @Override
     @PowertoolsLogging(logEvent = true, samplingRate = 0.5)
     @PowertoolsTracing(namespace = "Recognition", captureResponse = false)
+    @PowertoolsMetrics(namespace = "Recognition", captureColdStart = true, raiseOnEmptyMetrics = true)
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
         String image = input.getBody();
 
@@ -74,14 +81,22 @@ public class RecognizeImageHandler implements RequestHandler<APIGatewayProxyRequ
             GetItemResponse faceDetails = query(keyMap);
 
             if (faceDetails.hasItem()) {
+                String fullName = faceDetails.item().get("FullName").s();
+
+                putAnnotation("FullName", fullName);
+                putMetadata("Confidence", faceMatch.face().confidence());
+
+                metricsLogger().putMetric("FaceSearchCount", 1, Unit.COUNT);
+
                 return apiGatewayProxyResponseEvent
                         .withStatusCode(200)
                         .withBody("{\n" +
-                                "  \"person_name\": \"" + faceDetails.item().get("FullName").s() + "\"\n" +
+                                "  \"person_name\": \"" + fullName + "\"\n" +
                                 "}");
             }
         }
 
+        metricsLogger().putMetric("FaceSearchCount", 0, Unit.COUNT);
         return apiGatewayProxyResponseEvent
                 .withStatusCode(200)
                 .withBody("{\n" +
