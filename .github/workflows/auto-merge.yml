@@ -7,7 +7,7 @@ jobs:
   worker:
     runs-on: ubuntu-latest
 
-    if: github.actor == 'dependabot[bot]'
+    if: github.actor == 'pankajagrawal16'
     steps:
       - uses: actions/github-script@0.2.0
         with:
@@ -21,6 +21,7 @@ jobs:
             github.pullRequests.merge({
               owner: context.payload.repository.owner.login,
               repo: context.payload.repository.name,
-              pull_number: context.payload.pull_request.number
+              pull_number: context.payload.pull_request.number,
+              merge_method: 'squash' 
             })
           github-token: ${{ secrets.AUTOMERGE }}
