@@ -55,7 +55,7 @@ jobs:
   auto-merge:
     runs-on: ubuntu-latest
     needs: [ build ]
-    if: github.base_ref == 'master' && github.actor == 'pankajagrawal16'
+    if: github.base_ref == 'master' && github.actor == 'dependabot[bot]'
     steps:
       - uses: actions/github-script@0.2.0
         with:
