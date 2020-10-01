@@ -41,7 +41,6 @@
             <artifactId>rekognition</artifactId>
             <version>2.14.26</version>
         </dependency>
-
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>dynamodb</artifactId>
