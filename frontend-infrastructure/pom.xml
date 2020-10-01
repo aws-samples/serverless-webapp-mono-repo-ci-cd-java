@@ -9,6 +9,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <cdk.version>[1.65.0, 2.0.0)</cdk.version>
     </properties>
 
     <build>
@@ -39,62 +40,62 @@
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>core</artifactId>
-            <version>1.65.0</version>
+            <version>${cdk.version}</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>s3</artifactId>
-            <version>1.65.0</version>
+            <version>${cdk.version}</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>s3-deployment</artifactId>
-            <version>1.65.0</version>
+            <version>${cdk.version}</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>cloudfront</artifactId>
-            <version>1.65.0</version>
+            <version>${cdk.version}</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>codepipeline</artifactId>
-            <version>1.65.0</version>
+            <version>${cdk.version}</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>codebuild</artifactId>
-            <version>1.65.0</version>
+            <version>${cdk.version}</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>codepipeline-actions</artifactId>
-            <version>1.63.0</version>
+            <version>${cdk.version}</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>ssm</artifactId>
-            <version>1.65.0</version>
+            <version>${cdk.version}</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>cloudtrail</artifactId>
-            <version>1.65.0</version>
+            <version>${cdk.version}</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>certificatemanager</artifactId>
-            <version>1.65.0</version>
+            <version>${cdk.version}</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>route53</artifactId>
-            <version>1.65.0</version>
+            <version>${cdk.version}</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>route53-targets</artifactId>
-            <version>1.65.0</version>
+            <version>${cdk.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/junit/junit -->
@@ -105,4 +106,5 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
 </project>
