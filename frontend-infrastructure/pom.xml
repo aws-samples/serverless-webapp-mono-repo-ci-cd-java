@@ -94,7 +94,7 @@
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>route53-targets</artifactId>
-            <version>1.63.0</version>
+            <version>1.65.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/junit/junit -->
