@@ -179,6 +179,7 @@ Resources:
       AutoPublishAlias: live
       Timeout: 10
       MemorySize: 1536
+      Tracing: PassThrough
 
 
   PopulateCreateCollection:
