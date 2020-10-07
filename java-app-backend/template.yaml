@@ -26,6 +26,12 @@ Globals:
     TracingEnabled: True
   Function:
     Timeout: 10
+    Tracing: Active
+    Environment:
+      Variables:
+        POWERTOOLS_METRICS_NAMESPACE: FacialRecognitionApp
+        POWERTOOLS_SERVICE_NAME: RecognitionService
+
 
 Resources:
   LambdaExecutionRole:
@@ -114,7 +120,6 @@ Resources:
       AutoPublishAlias: live
       Runtime: java8
       Timeout: 10
-      Tracing: Active
       MemorySize: 1536
       Environment:
         Variables:
@@ -204,12 +209,10 @@ Resources:
       Runtime: java8
       MemorySize: 1536
       AutoPublishAlias: live
-      Tracing: Active
       Environment:
         Variables:
           UploadBucket: !Ref UploadBucket
           POWERTOOLS_SERVICE_NAME: ImageUploadHandler
-          POWERTOOLS_METRICS_NAMESPACE: ImageUpload
       Policies:
         - S3CrudPolicy:
             BucketName: !Ref UploadBucket
@@ -229,7 +232,6 @@ Resources:
       Runtime: java8
       MemorySize: 1536
       AutoPublishAlias: live
-      Tracing: Active
       Environment:
         Variables:
           CollectionName: !Sub "${AWS::StackName}-collection"
