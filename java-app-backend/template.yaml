@@ -29,8 +29,8 @@ Globals:
     Tracing: Active
     Environment:
       Variables:
-        POWERTOOLS_METRICS_NAMESPACE: FacialRecognitionApp
-        POWERTOOLS_SERVICE_NAME: RecognitionService
+        POWERTOOLS_METRICS_NAMESPACE: ServerlessApp
+        POWERTOOLS_SERVICE_NAME: ImageService
 
 
 Resources:
