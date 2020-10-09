@@ -49,6 +49,7 @@ Resources:
       Path: "/"
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess
+        - arn:aws:iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy
       Policies:
         - PolicyName: LambdaExecutionRole
           PolicyDocument:
@@ -88,6 +89,8 @@ Resources:
             Action:
               - sts:AssumeRole
       Path: "/service-role/"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy
       Policies:
         - PolicyName: AmazonRekognition
           PolicyDocument:
@@ -121,6 +124,8 @@ Resources:
       Runtime: java8
       Timeout: 10
       MemorySize: 1536
+      Layers:
+        - arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:2
       Environment:
         Variables:
           CollectionId: !Sub "${AWS::StackName}-collection"
@@ -175,6 +180,8 @@ Resources:
       CodeUri: BackendFunction
       Handler: com.webapp.function.CreateCollectionHandler::handleRequest
       Runtime: java8
+      Layers:
+        - arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:2
       Role: !GetAtt [ BootstrapExecutionRole, Arn ]
       AutoPublishAlias: live
       Timeout: 10
@@ -210,11 +217,14 @@ Resources:
       Runtime: java8
       MemorySize: 1536
       AutoPublishAlias: live
+      Layers:
+        - arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:2
       Environment:
         Variables:
           UploadBucket: !Ref UploadBucket
           POWERTOOLS_SERVICE_NAME: ImageUploadHandler
       Policies:
+        - CloudWatchLambdaInsightsExecutionRolePolicy
         - S3CrudPolicy:
             BucketName: !Ref UploadBucket
       Events:
@@ -233,11 +243,14 @@ Resources:
       Runtime: java8
       MemorySize: 1536
       AutoPublishAlias: live
+      Layers:
+        - arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:2
       Environment:
         Variables:
           CollectionName: !Sub "${AWS::StackName}-collection"
           TableName: !Sub "${AWS::StackName}-table"
       Policies:
+        - CloudWatchLambdaInsightsExecutionRolePolicy
         - RekognitionReadPolicy:
             CollectionId: !Sub "${AWS::StackName}-collection"
         - DynamoDBReadPolicy:
