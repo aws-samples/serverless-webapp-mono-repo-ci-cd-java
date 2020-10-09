@@ -121,7 +121,7 @@ Resources:
       CodeUri: BackendFunction
       Handler: com.webapp.function.IndexImageHandler::handleRequest
       AutoPublishAlias: live
-      Runtime: java8
+      Runtime: java8.al2
       Timeout: 10
       MemorySize: 1536
       Layers:
@@ -180,7 +180,7 @@ Resources:
       FunctionName: !Sub "${AWS::StackName}-CreateCollection"
       CodeUri: BackendFunction
       Handler: com.webapp.function.CreateCollectionHandler::handleRequest
-      Runtime: java8
+      Runtime: java8.al2
       Layers:
         - !Sub arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:2
       Role: !GetAtt [ BootstrapExecutionRole, Arn ]
@@ -215,7 +215,7 @@ Resources:
       Description: Generate presigned url for S3 bucket and attach to API gateway
       CodeUri: BackendFunction
       Handler: com.webapp.function.ImageUploadHandler::handleRequest
-      Runtime: java8
+      Runtime: java8.al2
       MemorySize: 1536
       AutoPublishAlias: live
       Layers:
@@ -242,7 +242,7 @@ Resources:
       Description: Take image for recognition
       CodeUri: BackendFunction
       Handler: com.webapp.function.RecognizeImageHandler::handleRequest
-      Runtime: java8
+      Runtime: java8.al2
       MemorySize: 1536
       AutoPublishAlias: live
       Layers:
