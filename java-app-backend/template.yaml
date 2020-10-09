@@ -125,7 +125,7 @@ Resources:
       Timeout: 10
       MemorySize: 1536
       Layers:
-        - arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:2
+        - arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:2
       Environment:
         Variables:
           CollectionId: !Sub "${AWS::StackName}-collection"
@@ -182,7 +182,7 @@ Resources:
       Handler: com.webapp.function.CreateCollectionHandler::handleRequest
       Runtime: java8
       Layers:
-        - arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:2
+        - arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:2
       Role: !GetAtt [ BootstrapExecutionRole, Arn ]
       AutoPublishAlias: live
       Timeout: 10
@@ -219,7 +219,7 @@ Resources:
       MemorySize: 1536
       AutoPublishAlias: live
       Layers:
-        - arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:2
+        - arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:2
       Environment:
         Variables:
           UploadBucket: !Ref UploadBucket
@@ -246,7 +246,7 @@ Resources:
       MemorySize: 1536
       AutoPublishAlias: live
       Layers:
-        - arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:2
+        - arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:2
       Environment:
         Variables:
           CollectionName: !Sub "${AWS::StackName}-collection"
