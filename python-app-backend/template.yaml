@@ -124,6 +124,7 @@ Resources:
         Variables:
           CollectionId: !Sub "${AWS::StackName}-collection"
           TableName: !Sub "${AWS::StackName}-table"
+          LAMBDA_INSIGHTS_LOG_LEVEL: info
       Events:
         S3Event:
           Type: S3
@@ -213,6 +214,7 @@ Resources:
       Environment:
         Variables:
           UploadBucket: !Ref UploadBucket
+          LAMBDA_INSIGHTS_LOG_LEVEL: info
       Policies:
         - CloudWatchLambdaInsightsExecutionRolePolicy
         - S3CrudPolicy:
@@ -240,6 +242,7 @@ Resources:
         Variables:
           CollectionName: !Sub "${AWS::StackName}-collection"
           TableName: !Sub "${AWS::StackName}-table"
+          LAMBDA_INSIGHTS_LOG_LEVEL: info
       Policies:
         - CloudWatchLambdaInsightsExecutionRolePolicy
         - RekognitionReadPolicy:

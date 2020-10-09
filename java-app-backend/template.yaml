@@ -131,6 +131,7 @@ Resources:
           CollectionId: !Sub "${AWS::StackName}-collection"
           TableName: !Sub "${AWS::StackName}-table"
           POWERTOOLS_SERVICE_NAME: ImageRekognition
+          LAMBDA_INSIGHTS_LOG_LEVEL: info
       Events:
         S3Event:
           Type: S3
@@ -223,6 +224,7 @@ Resources:
         Variables:
           UploadBucket: !Ref UploadBucket
           POWERTOOLS_SERVICE_NAME: ImageUploadHandler
+          LAMBDA_INSIGHTS_LOG_LEVEL: info
       Policies:
         - CloudWatchLambdaInsightsExecutionRolePolicy
         - S3CrudPolicy:
@@ -249,6 +251,7 @@ Resources:
         Variables:
           CollectionName: !Sub "${AWS::StackName}-collection"
           TableName: !Sub "${AWS::StackName}-table"
+          LAMBDA_INSIGHTS_LOG_LEVEL: info
       Policies:
         - CloudWatchLambdaInsightsExecutionRolePolicy
         - RekognitionReadPolicy:
