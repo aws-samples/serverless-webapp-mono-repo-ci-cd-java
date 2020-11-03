@@ -17,11 +17,11 @@ import org.apache.logging.log4j.Logger;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.cloudwatchlogs.emf.model.Unit;
-import software.amazon.lambda.powertools.logging.PowertoolsLogging;
-import software.amazon.lambda.powertools.metrics.PowertoolsMetrics;
-import software.amazon.lambda.powertools.tracing.PowertoolsTracing;
+import software.amazon.lambda.powertools.logging.Logging;
+import software.amazon.lambda.powertools.metrics.Metrics;
+import software.amazon.lambda.powertools.tracing.Tracing;
 
-import static software.amazon.lambda.powertools.metrics.PowertoolsMetricsLogger.metricsLogger;
+import static software.amazon.lambda.powertools.metrics.MetricsUtils.metricsLogger;
 
 public class ImageUploadHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger LOG = LogManager.getLogger(ImageUploadHandler.class);
@@ -30,9 +30,9 @@ public class ImageUploadHandler implements RequestHandler<APIGatewayProxyRequest
 
     private static final String S3_BUCKET = System.getenv("UploadBucket");
 
-    @PowertoolsLogging(logEvent = true, samplingRate = 0.5)
-    @PowertoolsTracing
-    @PowertoolsMetrics(captureColdStart = true)
+    @Logging(logEvent = true, samplingRate = 0.5)
+    @Tracing
+    @Metrics(captureColdStart = true)
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
         APIGatewayProxyResponseEvent apiGatewayProxyResponseEvent = new APIGatewayProxyResponseEvent();
@@ -75,7 +75,7 @@ public class ImageUploadHandler implements RequestHandler<APIGatewayProxyRequest
         return response(apiGatewayProxyResponseEvent, fileName, requestObject.url());
     }
 
-    @PowertoolsTracing
+    @Tracing
     private APIGatewayProxyResponseEvent response(final APIGatewayProxyResponseEvent apiGatewayProxyResponseEvent,
                                                   final String fileName,
                                                   final URL url) {

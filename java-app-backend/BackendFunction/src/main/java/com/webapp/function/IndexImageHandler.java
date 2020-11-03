@@ -19,10 +19,11 @@ import software.amazon.awssdk.services.rekognition.model.S3Object;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
-import software.amazon.lambda.powertools.logging.PowertoolsLogging;
-import software.amazon.lambda.powertools.tracing.PowertoolsTracing;
+import software.amazon.lambda.powertools.logging.Logging;
+import software.amazon.lambda.powertools.tracing.Tracing;
 
-import static software.amazon.lambda.powertools.tracing.PowerTracer.*;
+import static software.amazon.lambda.powertools.tracing.TracingUtils.putAnnotation;
+import static software.amazon.lambda.powertools.tracing.TracingUtils.putMetadata;
 
 public class IndexImageHandler implements RequestHandler<S3EventNotification, IndexFacesResponse> {
     private static final Logger LOG = LogManager.getLogger(IndexImageHandler.class);
@@ -35,8 +36,8 @@ public class IndexImageHandler implements RequestHandler<S3EventNotification, In
     private static final S3Client s3Client = S3Client.create();
 
     @Override
-    @PowertoolsLogging(logEvent = true, samplingRate = 0.5)
-    @PowertoolsTracing(namespace = "ImageIndexer")
+    @Logging(logEvent = true, samplingRate = 0.5)
+    @Tracing(namespace = "ImageIndexer")
     public IndexFacesResponse handleRequest(S3EventNotification input, Context context) {
         String bucketName = input.getRecords().get(0).getS3().getBucket().getName();
         String bucketKey = input.getRecords().get(0).getS3().getObject().getUrlDecodedKey();
@@ -69,7 +70,7 @@ public class IndexImageHandler implements RequestHandler<S3EventNotification, In
 
     }
 
-    @PowertoolsTracing
+    @Tracing
     private IndexFacesResponse indexFaces(final String bucketName,
                                           final String bucketKey) {
 
@@ -85,7 +86,7 @@ public class IndexImageHandler implements RequestHandler<S3EventNotification, In
         return indexFacesResponse;
     }
 
-    @PowertoolsTracing
+    @Tracing
     private void updateIndexDetails(final String faceId,
                                     final String fullname) {
         Map<String, AttributeValue> item = new HashMap<>();

@@ -21,15 +21,14 @@ import software.amazon.awssdk.services.rekognition.model.FaceMatch;
 import software.amazon.awssdk.services.rekognition.model.Image;
 import software.amazon.awssdk.services.rekognition.model.SearchFacesByImageResponse;
 import software.amazon.cloudwatchlogs.emf.model.Unit;
-import software.amazon.lambda.powertools.logging.PowertoolsLogging;
-import software.amazon.lambda.powertools.metrics.PowertoolsMetrics;
-import software.amazon.lambda.powertools.tracing.PowertoolsTracing;
+import software.amazon.lambda.powertools.logging.Logging;
+import software.amazon.lambda.powertools.metrics.Metrics;
+import software.amazon.lambda.powertools.tracing.Tracing;
 
 import static java.util.Collections.emptyList;
-import static software.amazon.lambda.powertools.metrics.PowertoolsMetricsLogger.metricsLogger;
-import static software.amazon.lambda.powertools.metrics.PowertoolsMetricsLogger.withSingleMetric;
-import static software.amazon.lambda.powertools.tracing.PowerTracer.putAnnotation;
-import static software.amazon.lambda.powertools.tracing.PowerTracer.putMetadata;
+import static software.amazon.lambda.powertools.metrics.MetricsUtils.metricsLogger;
+import static software.amazon.lambda.powertools.tracing.TracingUtils.putAnnotation;
+import static software.amazon.lambda.powertools.tracing.TracingUtils.putMetadata;
 
 public class RecognizeImageHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger LOG = LogManager.getLogger(RecognizeImageHandler.class);
@@ -41,9 +40,9 @@ public class RecognizeImageHandler implements RequestHandler<APIGatewayProxyRequ
     private static final DynamoDbClient dynamoDbClient = DynamoDbClient.create();
 
     @Override
-    @PowertoolsLogging(logEvent = true, samplingRate = 0.5)
-    @PowertoolsTracing(namespace = "Recognition", captureResponse = false)
-    @PowertoolsMetrics(namespace = "Recognition", service = "FindImage", captureColdStart = true, raiseOnEmptyMetrics = true)
+    @Logging(logEvent = true, samplingRate = 0.5)
+    @Tracing(namespace = "Recognition", captureResponse = false)
+    @Metrics(namespace = "Recognition", service = "FindImage", captureColdStart = true, raiseOnEmptyMetrics = true)
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
         String image = input.getBody();
 
@@ -104,7 +103,7 @@ public class RecognizeImageHandler implements RequestHandler<APIGatewayProxyRequ
                         "}");
     }
 
-    @PowertoolsTracing(captureResponse = false)
+    @Tracing(captureResponse = false)
     private GetItemResponse query(Map<String, AttributeValue> keyMap) {
         GetItemRequest itemRequest = GetItemRequest.builder()
                 .tableName(TABLE_NAME)
@@ -118,7 +117,7 @@ public class RecognizeImageHandler implements RequestHandler<APIGatewayProxyRequ
         }
     }
 
-    @PowertoolsTracing(captureResponse = false)
+    @Tracing(captureResponse = false)
     private List<FaceMatch> faceSearch(byte[] decodedImage) {
         try {
             SearchFacesByImageResponse searchFacesByImageResponse = rekognitionClient.searchFacesByImage(builder -> builder.collectionId(COLLECTION_ID)

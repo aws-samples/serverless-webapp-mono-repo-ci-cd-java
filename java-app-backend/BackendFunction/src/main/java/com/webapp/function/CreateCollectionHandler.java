@@ -17,7 +17,7 @@ import software.amazon.awssdk.services.rekognition.model.CreateCollectionRequest
 import software.amazon.awssdk.services.rekognition.model.CreateCollectionResponse;
 import software.amazon.awssdk.services.rekognition.model.DeleteCollectionRequest;
 import software.amazon.awssdk.services.rekognition.model.DeleteCollectionResponse;
-import software.amazon.lambda.powertools.logging.PowertoolsLogging;
+import software.amazon.lambda.powertools.logging.Logging;
 
 /**
  * Handler for requests to Lambda function.
@@ -26,7 +26,7 @@ public class CreateCollectionHandler implements RequestHandler<Map<String, Objec
     private static final Logger LOG = LogManager.getLogger(CreateCollectionHandler.class);
     private static final RekognitionClient client = RekognitionClient.create();
 
-    @PowertoolsLogging(logEvent = true)
+    @Logging(logEvent = true)
     public APIGatewayProxyResponseEvent handleRequest(final Map<String, Object> input, final Context context) {
         String collectionId = (String) ((Map) input.get("ResourceProperties")).get("CollectionName");
 
