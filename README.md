@@ -84,7 +84,7 @@ leave `cert_domain` as empty string. Leaving `approval_emails` as empty won't cr
     cd frontend-infrastructure/
 ```
 ```  
-    maven clean install
+    mvn clean install
 ```
 ```
     cdk synth serverless-web-application-frontend-pipeline --region eu-west-1
