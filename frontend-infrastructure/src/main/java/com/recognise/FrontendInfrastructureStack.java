@@ -3,6 +3,7 @@ package com.recognise;
 import software.amazon.awscdk.core.Construct;
 import software.amazon.awscdk.core.Stack;
 import software.amazon.awscdk.core.StackProps;
+import software.amazon.awscdk.services.certificatemanager.CertificateValidation;
 import software.amazon.awscdk.services.certificatemanager.DnsValidatedCertificate;
 import software.amazon.awscdk.services.cloudfront.Behavior;
 import software.amazon.awscdk.services.cloudfront.CfnDistribution;
@@ -79,7 +80,7 @@ public class FrontendInfrastructureStack extends Stack {
                 .domainName("*." + contextValue("cert_domain"))
                 .hostedZone(hostedZone)
                 .region("us-east-1")
-                .validationMethod(DNS)
+                .validation(CertificateValidation.fromDns(hostedZone))
                 .build();
     }
 
