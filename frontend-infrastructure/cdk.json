@@ -6,8 +6,8 @@
     "frontend_infra_build_spec": "frontend-infrastructure/buildspec.yml",
     "frontend_infra_deploy_spec": "frontend-infrastructure/deployspec.yml",
     "approval_emails": "",
-    "owner": "aws-samples",
+    "owner": "pankajagrawal16",
     "repo": "serverless-webapp-mono-repo-ci-cd-java",
-    "cert_domain": ""
+    "cert_domain": "pankaagr.cloud"
   }
 }

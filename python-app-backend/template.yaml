@@ -59,7 +59,7 @@ Resources:
                 Action:
                   - s3:GetObject
                 Resource:
-                  !Join ["", [!Join [":", ["arn", "aws", "s3", "", "", !Join ["-", ["java", "backend", "bucket", !Select [0, !Split [-, !Select [2, !Split [/, !Ref AWS::StackId ]]]]]]]],  "/*"]]
+                  !Join ["", [!Join [":", ["arn", "aws", "s3", "", "", !Join ["-", ["python", "backend", "bucket", !Select [0, !Split [-, !Select [2, !Split [/, !Ref AWS::StackId ]]]]]]]],  "/*"]]
               - Effect: Allow
                 Action:
                   - rekognition:IndexFaces
@@ -144,7 +144,7 @@ Resources:
       Action: "lambda:invokeFunction"
       FunctionName: !GetAtt ImageRekognition.Arn
       Principal: "s3.amazonaws.com"
-      SourceArn: !Join [":", ["arn", "aws", "s3", "", "", !Join ["-", ["java", "backend", "bucket", !Select [0, !Split [-, !Select [2, !Split [/, !Ref AWS::StackId ]]]]]]]]
+      SourceArn: !Join [":", ["arn", "aws", "s3", "", "", !Join ["-", ["python", "backend", "bucket", !Select [0, !Split [-, !Select [2, !Split [/, !Ref AWS::StackId ]]]]]]]]
       SourceAccount: !Ref AWS::AccountId
 
   UploadBucket:
@@ -152,7 +152,7 @@ Resources:
     DependsOn:
       - RekognitionLambdaPermission
     Properties:
-      BucketName: !Join ["-", ["java", "backend", "bucket", !Select [0, !Split [-, !Select [2, !Split [/, !Ref AWS::StackId ]]]]]]
+      BucketName: !Join ["-", ["python", "backend", "bucket", !Select [0, !Split [-, !Select [2, !Split [/, !Ref AWS::StackId ]]]]]]
       CorsConfiguration:
         CorsRules:
           - AllowedHeaders:
