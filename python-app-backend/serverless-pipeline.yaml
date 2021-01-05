@@ -7,7 +7,7 @@ Parameters:
   GitHubOwner:
     Description: GitHub username owning the repo
     Type: String
-    Default: 'aws-samples'
+    Default: 'pankajagrawal16'
   GitHubRepo:
     Description: GitHub repo name
     Type: String
