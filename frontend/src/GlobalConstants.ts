@@ -1,6 +1,6 @@
 export const GLOBAL_CONSTANTS = {
-    'FIND_IMAGE': 'https://eqsbhzqk40.execute-api.eu-west-1.amazonaws.com/Prod' + '/recognise',
-    'UPLOAD_URL': 'https://eqsbhzqk40.execute-api.eu-west-1.amazonaws.com/Prod' + '/upload-url',
+    'FIND_IMAGE': 'https://x28114lgr6.execute-api.eu-west-1.amazonaws.com/Prod' + '/recognise',
+    'UPLOAD_URL': 'https://x28114lgr6.execute-api.eu-west-1.amazonaws.com/Prod' + '/upload-url',
 };
 
 export const Links_List = [
