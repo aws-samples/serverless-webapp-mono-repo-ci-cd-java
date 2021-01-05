@@ -59,7 +59,7 @@ Resources:
                 Action:
                   - s3:GetObject
                 Resource:
-                  !Join ["",[!Join [":", ["arn","aws","s3","", "", !Sub "${AWS::StackName}-bucket-demo"]],  "/*"]]
+                  !Join ["", [!Join [":", ["arn", "aws", "s3", "", "", !Join ["-", ["java", "backend", "bucket", !Select [0, !Split [-, !Select [2, !Split [/, !Ref AWS::StackId ]]]]]]]],  "/*"]]
               - Effect: Allow
                 Action:
                   - rekognition:IndexFaces
@@ -68,7 +68,7 @@ Resources:
                 Action:
                   - dynamodb:PutItem
                 Resource:
-                  !Join ["",[!Join [":", ["arn","aws","dynamodb",!Ref "AWS::Region", !Ref "AWS::AccountId"]],  ":table/", !Sub "${AWS::StackName}-table"]]
+                  !Join [":", ["arn", "aws", "dynamodb", !Ref "AWS::Region", !Ref "AWS::AccountId", !Join ["-", ["table/face", "id", !Select [0, !Split [-, !Select [2, !Split [/, !Ref AWS::StackId ]]]]]]]]
 
   BootstrapExecutionRole:
     Type: AWS::IAM::Role
@@ -122,8 +122,8 @@ Resources:
         - !Sub arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:2
       Environment:
         Variables:
-          CollectionId: !Sub "${AWS::StackName}-collection"
-          TableName: !Sub "${AWS::StackName}-table"
+          CollectionId: !Join ["-", ["collection", !Select [0, !Split [-, !Select [2, !Split [/, !Ref AWS::StackId ]]]]]]
+          TableName: !Join ["-", ["face", "id", !Select [0, !Split [-, !Select [2, !Split [/, !Ref AWS::StackId ]]]]]]
           LAMBDA_INSIGHTS_LOG_LEVEL: info
       Events:
         S3Event:
@@ -141,18 +141,18 @@ Resources:
   RekognitionLambdaPermission:
     Type: "AWS::Lambda::Permission"
     Properties:
-      "Action": "lambda:invokeFunction"
-      "FunctionName": !GetAtt ImageRekognition.Arn
-      "Principal": "s3.amazonaws.com"
-      "SourceArn": !Join [":", ["arn","aws","s3","", "", !Sub "${AWS::StackName}-bucket-demo"]]
-      "SourceAccount": !Ref AWS::AccountId
+      Action: "lambda:invokeFunction"
+      FunctionName: !GetAtt ImageRekognition.Arn
+      Principal: "s3.amazonaws.com"
+      SourceArn: !Join [":", ["arn", "aws", "s3", "", "", !Join ["-", ["java", "backend", "bucket", !Select [0, !Split [-, !Select [2, !Split [/, !Ref AWS::StackId ]]]]]]]]
+      SourceAccount: !Ref AWS::AccountId
 
   UploadBucket:
     Type: "AWS::S3::Bucket"
     DependsOn:
       - RekognitionLambdaPermission
     Properties:
-      BucketName: !Sub "${AWS::StackName}-bucket-demo"
+      BucketName: !Join ["-", ["java", "backend", "bucket", !Select [0, !Split [-, !Select [2, !Split [/, !Ref AWS::StackId ]]]]]]
       CorsConfiguration:
         CorsRules:
           - AllowedHeaders:
@@ -170,7 +170,6 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Description: Custom resource function to create Rekognition collection
-      FunctionName: !Sub "${AWS::StackName}-CreateCollection"
       CodeUri: lambda/create-collection/
       Handler: main.lambda_handler
       Layers:
@@ -185,7 +184,7 @@ Resources:
     Version: "1.0"
     Properties:
       ServiceToken: !GetAtt LambdaCreateCollection.Arn
-      CollectionName: !Sub "${AWS::StackName}-collection"
+      CollectionName: !Join ["-", ["collection", !Select [0, !Split [-, !Select [2, !Split [/, !Ref AWS::StackId ]]]]]]
 
 
   DynamoDBTable:
@@ -197,7 +196,7 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 1
         WriteCapacityUnits: 1
-      TableName: !Sub "${AWS::StackName}-table"
+      TableName: !Join ["-", ["face", "id", !Select [0, !Split [-, !Select [2, !Split [/, !Ref AWS::StackId ]]]]]]
 
   S3UploaderFunction:
     Type: AWS::Serverless::Function
@@ -241,14 +240,14 @@ Resources:
       Environment:
         Variables:
           CollectionName: !Sub "${AWS::StackName}-collection"
-          TableName: !Sub "${AWS::StackName}-table"
+          TableName: !Join ["-", ["face", "id", !Select [0, !Split [-, !Select [2, !Split [/, !Ref AWS::StackId ]]]]]]
           LAMBDA_INSIGHTS_LOG_LEVEL: info
       Policies:
         - CloudWatchLambdaInsightsExecutionRolePolicy
         - RekognitionReadPolicy:
-            CollectionId: !Sub "${AWS::StackName}-collection"
+            CollectionId: !Join ["-", ["collection", !Select [0, !Split [-, !Select [2, !Split [/, !Ref AWS::StackId ]]]]]]
         - DynamoDBReadPolicy:
-            TableName: !Sub "${AWS::StackName}-table"
+            TableName: !Join ["-", ["face", "id", !Select [0, !Split [-, !Select [2, !Split [/, !Ref AWS::StackId ]]]]]]
       Events:
         HttpPost:
           Type: Api
