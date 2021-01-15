@@ -11,7 +11,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <aws.java.sdk.version>2.15.61</aws.java.sdk.version>
         <log4j.version>2.13.2</log4j.version>
-        <powertools.version>1.1.0</powertools.version>
+        <powertools.version>1.2.0</powertools.version>
     </properties>
 
     <dependencyManagement>
