@@ -7,7 +7,7 @@ Parameters:
   GitHubOwner:
     Description: GitHub username owning the repo
     Type: String
-    Default: 'aws-samples'
+    Default: 't-jones'
   GitHubRepo:
     Description: GitHub repo name
     Type: String
@@ -21,7 +21,7 @@ Parameters:
     Type: String
     Default: "serverless-web-application-python-backend"
   ManualApproval:
-    Description: Wait for approval before deploying?
+    Description: Wait for approval before deploying? Enter 'true' or 'false'
     Type: String
     Default: "false"
   BuildSpecFilePath:
