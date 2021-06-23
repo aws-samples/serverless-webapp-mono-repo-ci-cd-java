@@ -1,6 +1,6 @@
 # serverless-webapp-ci-cd-java  
 
-__Status__: _Work-in-progress. Please create issues or pull requests if you have ideas for improvement._
+![Build Backend Infra status](https://github.com/aws-samples/serverless-webapp-mono-repo-ci-cd-java/actions/workflows/build-backend-infra.yml/badge.svg) ![Build Frontend Infra status](https://github.com/aws-samples/serverless-webapp-mono-repo-ci-cd-java/actions/workflows/build-frontend-infra.yml/badge.svg)
 
 :heart:  Backend is powered by [aws-lambda-powertools-java](https://github.com/awslabs/aws-lambda-powertools-java) and [aws-lambda-powertools-python](https://github.com/awslabs/aws-lambda-powertools-python)
 
