@@ -1,4 +1,4 @@
-name: Build frontend infra
+name: Build Frontend Infra
 
 on:
   pull_request:
