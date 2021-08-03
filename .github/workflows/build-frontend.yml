@@ -1,0 +1,56 @@
+name: Build FrontEnd
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'frontend/**'
+  push:
+    branches:
+      - master
+    paths:
+      - 'frontend/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        node-version: [10.x]
+    name: Node ${{ matrix.java }}
+    env:
+      OS: ${{ matrix.os }}
+      NODE_VERSION: ${{ matrix.node-version }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install
+        working-directory: ./frontend
+        run: npm ci
+      - name: Build
+        working-directory: ./frontend
+        run: npm run build --if-present
+      - name: Test
+        working-directory: ./frontend
+        run: npm test
+
+  savepr:
+    runs-on: ubuntu-latest
+    name: Save PR number if running on PR by dependabot
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      - name: Create Directory and save issue
+        run: |
+          mkdir -p ./pr
+          echo ${{ github.event.number }}
+          echo ${{ github.event.number }} > ./pr/NR
+      - uses: actions/upload-artifact@v2
+        name: Updload artifact
+        with:
+          name: pr
+          path: pr/
