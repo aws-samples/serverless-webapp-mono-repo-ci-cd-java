@@ -3,12 +3,12 @@ import {Button} from "@material-ui/core";
 import {useHistory} from "react-router";
 import ButtonAppBar from "./Header";
 
-type FormButtons = {
+type FormButton = {
     registerColor: 'default' | 'inherit' | 'primary' | 'secondary',
     findColor: 'default' | 'inherit' | 'primary' | 'secondary',
 }
 
-const FormButtons: React.FunctionComponent<FormButtons> = ({registerColor, findColor}) => {
+const FormButtons: React.FunctionComponent<FormButton> = ({registerColor, findColor}) => {
     const history = useHistory();
 
     const handleShowRegister = () => {
