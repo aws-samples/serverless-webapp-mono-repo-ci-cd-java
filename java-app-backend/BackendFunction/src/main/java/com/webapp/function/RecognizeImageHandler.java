@@ -27,6 +27,7 @@ import software.amazon.lambda.powertools.tracing.Tracing;
 
 import static java.util.Collections.emptyList;
 import static software.amazon.lambda.powertools.metrics.MetricsUtils.metricsLogger;
+import static software.amazon.lambda.powertools.tracing.CaptureMode.ERROR;
 import static software.amazon.lambda.powertools.tracing.TracingUtils.putAnnotation;
 import static software.amazon.lambda.powertools.tracing.TracingUtils.putMetadata;
 
@@ -41,7 +42,7 @@ public class RecognizeImageHandler implements RequestHandler<APIGatewayProxyRequ
 
     @Override
     @Logging(logEvent = true, samplingRate = 0.5)
-    @Tracing(namespace = "Recognition", captureResponse = false)
+    @Tracing(namespace = "Recognition", captureMode = ERROR)
     @Metrics(namespace = "Recognition", service = "FindImage", captureColdStart = true, raiseOnEmptyMetrics = true)
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
         String image = input.getBody();
@@ -103,7 +104,7 @@ public class RecognizeImageHandler implements RequestHandler<APIGatewayProxyRequ
                         "}");
     }
 
-    @Tracing(captureResponse = false)
+    @Tracing(captureMode = ERROR)
     private GetItemResponse query(Map<String, AttributeValue> keyMap) {
         GetItemRequest itemRequest = GetItemRequest.builder()
                 .tableName(TABLE_NAME)
@@ -117,7 +118,7 @@ public class RecognizeImageHandler implements RequestHandler<APIGatewayProxyRequ
         }
     }
 
-    @Tracing(captureResponse = false)
+    @Tracing(captureMode = ERROR)
     private List<FaceMatch> faceSearch(byte[] decodedImage) {
         try {
             SearchFacesByImageResponse searchFacesByImageResponse = rekognitionClient.searchFacesByImage(builder -> builder.collectionId(COLLECTION_ID)
