@@ -8,15 +8,15 @@ phases:
       - echo Build started on `date`
       - cd $CODEBUILD_SRC_DIR
       - cd frontend
-      - yarn install
+      - npm install
     finally:
       - pwd
   build:
     commands:
       - echo Building static site..
-      - yarn build
+      - npm run build
       - echo Run tests...
-      - CI=true yarn test
+      - CI=true npm test
 
 artifacts:
   type: zip
