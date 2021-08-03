@@ -7,7 +7,12 @@ updates:
     labels:
       - "maven"
       - "dependencies"
-
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "daily"
+    labels:
+      - "dependencies"
   - package-ecosystem: "maven"
     directory: "/java-app-backend/BackendFunction"
     schedule:
