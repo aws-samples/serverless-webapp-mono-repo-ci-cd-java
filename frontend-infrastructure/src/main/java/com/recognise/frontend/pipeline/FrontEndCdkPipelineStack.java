@@ -129,31 +129,33 @@ public class FrontEndCdkPipelineStack extends Stack {
                 .resources(singletonList(frontEndArtifactBucket.getBucketArn()))
                 .build());
 
-//        HashMap<String, IFileSetProducer> preSteps = new HashMap<>();
-//
-//        preSteps.put("frontend/build",  CodeBuildStep.Builder.create("BuildFrontendProject")
-//                        //.partialBuildSpec(BuildSpec.fromSourceFilename(contextValue("frontend_build_spec")))
-//                        .commands(asList(
-//                                "cd frontend",
-//                                "npm install",
-//                                "npm run build",
-//                                "CI=true npm test"
-//                        ))
-//                .primaryOutputDirectory("./frontend/build")
-//                .build());
+        HashMap<String, IFileSetProducer> preSteps = new HashMap<>();
 
-        CodePipeline codePipeline = CodePipeline.Builder.create(this, "WebApplicationFrontEndCdkPipeline")
-                .pipelineName("WebApplicationFrontEndCdkPipeline")
-                .crossAccountKeys(false)
-                .selfMutation(true)
-                .synth(new CodeBuildStep("BuildFrontendInfrastructureProject", CodeBuildStepProps.builder()
-                        //.partialBuildSpec(BuildSpec.fromSourceFilename(contextValue("frontend_infra_build_spec")))
+        preSteps.put("frontend/build",  CodeBuildStep.Builder.create("BuildFrontendProject")
+                        //.partialBuildSpec(BuildSpec.fromSourceFilename(contextValue("frontend_build_spec")))
                         .commands(asList(
                                 "cd frontend",
                                 "npm install",
                                 "npm run build",
-                                "CI=true npm test",
-                                "cd ../frontend-infrastructure",
+                                "CI=true npm test"
+                        ))
+                .primaryOutputDirectory("./frontend/build")
+                .build());
+
+        CodePipeline codePipeline = CodePipeline.Builder.create(this, "WebApplicationFrontEndCdkPipeline")
+                .pipelineName("WebApplicationFrontEndCdkPipeline")
+                .crossAccountKeys(false)
+                // Self mutation is very much needed here coz of https://github.com/aws/aws-cdk/issues/9080.
+                // Else the publishing actions might try to publish obsolete hash
+                .selfMutation(true)
+                .synth(new CodeBuildStep("BuildFrontendInfrastructureProject", CodeBuildStepProps.builder()
+                        //.partialBuildSpec(BuildSpec.fromSourceFilename(contextValue("frontend_infra_build_spec")))
+                        .commands(asList(
+//                                "cd frontend",
+//                                "npm install",
+//                                "npm run build",
+//                                "CI=true npm test",
+                                "cd frontend-infrastructure",
                                 "npm install -g aws-cdk",
                                 "mvn clean install --quiet",
                                 "cdk synth"
@@ -173,7 +175,6 @@ public class FrontEndCdkPipelineStack extends Stack {
                                 .build())
                         .build())
                 .build();
-
 
         List<Step> preProStep = new ArrayList<>();
 
