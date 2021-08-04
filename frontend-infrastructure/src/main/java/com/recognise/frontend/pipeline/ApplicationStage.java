@@ -18,7 +18,7 @@ public class ApplicationStage extends Stage {
     public ApplicationStage(@NotNull Construct scope, @NotNull String id, @Nullable StageProps props) {
         super(scope, id, props);
 
-        new FrontendInfrastructureStack(this, "FrontEndInfraApp", StackProps.builder()
+        new FrontendInfrastructureStack(this, "web-application-frontend", StackProps.builder()
                 .description("Creates the frontend infrastructure for content")
                 .env(Environment.builder()
                         .region(ofNullable(props)

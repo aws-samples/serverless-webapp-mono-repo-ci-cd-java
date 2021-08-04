@@ -17,7 +17,6 @@ import software.amazon.awscdk.pipelines.CodePipelineSource;
 import software.amazon.awscdk.pipelines.IFileSetProducer;
 import software.amazon.awscdk.pipelines.ManualApprovalStep;
 import software.amazon.awscdk.pipelines.S3SourceOptions;
-import software.amazon.awscdk.pipelines.ShellStep;
 import software.amazon.awscdk.pipelines.Step;
 import software.amazon.awscdk.services.cloudtrail.ReadWriteType;
 import software.amazon.awscdk.services.cloudtrail.S3EventSelector;
@@ -132,7 +131,8 @@ public class FrontEndCdkPipelineStack extends Stack {
 
         HashMap<String, IFileSetProducer> preSteps = new HashMap<>();
 
-        preSteps.put("frontend/build",  ShellStep.Builder.create("BuildFrontendProject")
+        preSteps.put("frontend/build",  CodeBuildStep.Builder.create("BuildFrontendProject")
+                        //.partialBuildSpec(BuildSpec.fromSourceFilename(contextValue("frontend_build_spec")))
                         .commands(asList(
                                 "cd frontend",
                                 "npm install",
@@ -147,6 +147,7 @@ public class FrontEndCdkPipelineStack extends Stack {
                 .crossAccountKeys(false)
                 .selfMutation(false)
                 .synth(new CodeBuildStep("BuildFrontendInfrastructureProject", CodeBuildStepProps.builder()
+                        //.partialBuildSpec(BuildSpec.fromSourceFilename(contextValue("frontend_infra_build_spec")))
                         .commands(asList(
                                 "cd frontend-infrastructure",
                                 "npm install -g aws-cdk",
@@ -177,7 +178,7 @@ public class FrontEndCdkPipelineStack extends Stack {
                     .build());
         }
 
-        codePipeline.addStage(new ApplicationStage(this, "Prod", software.amazon.awscdk.core.StageProps.builder()
+        codePipeline.addStage(new ApplicationStage(this, "prod", software.amazon.awscdk.core.StageProps.builder()
                 .env(Environment.builder()
                         .region(props.getEnv().getRegion())
                         .build())
