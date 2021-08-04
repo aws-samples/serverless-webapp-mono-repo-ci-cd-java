@@ -142,7 +142,7 @@ public class FrontEndCdkPipelineStack extends Stack {
                                 "npm install --global npm && npm ci",
                                 "npm run build",
                                 "CI=true npm test",
-                                "cd frontend-infrastructure",
+                                "cd ../frontend-infrastructure",
                                 "npm install -g aws-cdk",
                                 "mvn clean install --quiet",
                                 "cdk synth"

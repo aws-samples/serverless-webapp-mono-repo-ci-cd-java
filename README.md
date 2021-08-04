@@ -65,7 +65,10 @@ to deploy backend in python or in java. Both are deployed via SAM.
 - After this step, codepipeline should take care of deploying your backend resources. If you choose to deploy with manual approval step, Navigate to [pipeline](https://eu-west-1.console.aws.amazon.com/codesuite/codepipeline/pipelines/WebApplicationBackendPipeline/view?region=eu-west-1) 
 and approve to deploy the stack.
 
-## Creating frontend with full CI/CD pipeline
+## Creating frontend with full CI/CD pipeline (Supports CDK Pipelines construct)
+
+**Note**: This Project now also provides supports for building CICD pipeline using [CDK pipeline construct](https://aws.amazon.com/about-aws/whats-new/2021/07/announcing-cdk-pipelines-ga-ci-cd-cdk-apps/).
+You may choose to either use CDK pipeline construct or setup using native L2 codepipeline constructs directly. Steps for both the ways are mentioned below. 
 
 _Note:_ If you wish to provision frontend without CI/CD, refer instructions [here](#creating-backend-without-full-cicd-pipelinemanually)
 
@@ -78,7 +81,33 @@ by navigating to [API gateway console](https://eu-west-1.console.aws.amazon.com/
 You might want to update `approval_emails`, `cert_domain`. If you don't want to host on a custom domain, 
 leave `cert_domain` as empty string. Leaving `approval_emails` as empty won't create any approval stage.
 
-- Create frontend CI/CD pipelines for deploying frontend resource via cdk. 
+- ### Create frontend CI/CD pipelines for deploying frontend resource via cdk using [CDK pipeline construct](https://aws.amazon.com/about-aws/whats-new/2021/07/announcing-cdk-pipelines-ga-ci-cd-cdk-apps/).
+
+```
+    cd frontend-infrastructure/
+```
+```  
+    mvn clean install
+```
+```
+    cdk synth serverless-web-application-frontend-cdk-pipeline --region eu-west-1
+```
+```
+    cdk bootstrap --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess
+```
+```
+    cdk deploy serverless-web-application-frontend-cdk-pipeline --region eu-west-1 --require-approval never
+```
+
+- Trigger Code build for deploying resources via pipeline.
+
+```
+    aws codebuild start-build --project-name WebApplicationFrontEndCdkPipelineDetector --region eu-west-1
+``` 
+
+- ### Create frontend CI/CD pipelines for deploying frontend resource via cdk. 
+
+**Note:** Perform below steps only if you have not set up the pipeline already using [CDK pipeline construct](https://aws.amazon.com/about-aws/whats-new/2021/07/announcing-cdk-pipelines-ga-ci-cd-cdk-apps/).
 
 ```
     cd frontend-infrastructure/
@@ -96,7 +125,7 @@ leave `cert_domain` as empty string. Leaving `approval_emails` as empty won't cr
     cdk deploy serverless-web-application-frontend-pipeline --region eu-west-1 --require-approval never
 ```
 
-- Trigger Code build for deploying backend resources via pipeline. It will use SAM to deploy serverless backend stack.
+- Trigger Code build for deploying resources via pipeline.
 
 ```
     aws codebuild start-build --project-name WebApplicationFrontEndPipelineDetector --region eu-west-1
