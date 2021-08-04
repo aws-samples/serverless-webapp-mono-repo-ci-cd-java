@@ -8,7 +8,7 @@
     "approval_emails": "",
     "owner": "pankajagrawal16",
     "repo": "serverless-webapp-mono-repo-ci-cd-java",
-    "cert_domain": "",
+    "cert_domain": "pankaagr.cloud",
     "@aws-cdk/core:newStyleStackSynthesis": true
   }
 }
