@@ -165,7 +165,7 @@ public class FrontEndCdkPipelineStack extends Stack {
                                 .trigger(S3Trigger.EVENTS)
                                 .actionName("S3FrontEndSource")
                                 .build()))
-                        //.additionalInputs(preSteps)
+                        .additionalInputs(preSteps)
                         .projectName("BuildFrontendInfrastructureProject")
                         .build()))
                 .codeBuildDefaults(CodeBuildOptions.builder()
