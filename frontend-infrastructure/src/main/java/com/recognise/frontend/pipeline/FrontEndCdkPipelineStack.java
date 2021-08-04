@@ -14,7 +14,6 @@ import software.amazon.awscdk.pipelines.CodeBuildStep;
 import software.amazon.awscdk.pipelines.CodeBuildStepProps;
 import software.amazon.awscdk.pipelines.CodePipeline;
 import software.amazon.awscdk.pipelines.CodePipelineSource;
-import software.amazon.awscdk.pipelines.IFileSetProducer;
 import software.amazon.awscdk.pipelines.ManualApprovalStep;
 import software.amazon.awscdk.pipelines.S3SourceOptions;
 import software.amazon.awscdk.pipelines.Step;
