@@ -9,12 +9,15 @@ import software.amazon.awscdk.core.Environment;
 import software.amazon.awscdk.core.Stack;
 import software.amazon.awscdk.core.StackProps;
 import software.amazon.awscdk.pipelines.AddStageOpts;
+import software.amazon.awscdk.pipelines.CodeBuildOptions;
 import software.amazon.awscdk.pipelines.CodeBuildStep;
 import software.amazon.awscdk.pipelines.CodeBuildStepProps;
 import software.amazon.awscdk.pipelines.CodePipeline;
 import software.amazon.awscdk.pipelines.CodePipelineSource;
+import software.amazon.awscdk.pipelines.IFileSetProducer;
 import software.amazon.awscdk.pipelines.ManualApprovalStep;
 import software.amazon.awscdk.pipelines.S3SourceOptions;
+import software.amazon.awscdk.pipelines.ShellStep;
 import software.amazon.awscdk.pipelines.Step;
 import software.amazon.awscdk.services.cloudtrail.ReadWriteType;
 import software.amazon.awscdk.services.cloudtrail.S3EventSelector;
@@ -127,26 +130,43 @@ public class FrontEndCdkPipelineStack extends Stack {
                 .resources(singletonList(frontEndArtifactBucket.getBucketArn()))
                 .build());
 
+        HashMap<String, IFileSetProducer> preSteps = new HashMap<>();
+
+        preSteps.put("frontend/build",  ShellStep.Builder.create("BuildFrontendProject")
+                        .commands(asList(
+                                "cd frontend",
+                                "npm install",
+                                "npm run build",
+                                "CI=true npm test"
+                        ))
+                .primaryOutputDirectory("./frontend/build")
+                .build());
+
         CodePipeline codePipeline = CodePipeline.Builder.create(this, "WebApplicationFrontEndCdkPipeline")
                 .pipelineName("WebApplicationFrontEndCdkPipeline")
                 .crossAccountKeys(false)
                 .selfMutation(false)
-                .synth(new CodeBuildStep("FrontEndSynth", CodeBuildStepProps.builder()
+                .synth(new CodeBuildStep("BuildFrontendInfrastructureProject", CodeBuildStepProps.builder()
                         .commands(asList(
                                 "cd frontend-infrastructure",
                                 "npm install -g aws-cdk",
+                                "mvn clean install --quiet",
                                 "cdk synth serverless-web-application-frontend"
                         ))
+                        .primaryOutputDirectory("./frontend-infrastructure/cdk.out")
                         .input(CodePipelineSource.s3(frontEndArtifactBucket, sourceZip, S3SourceOptions.builder()
                                 .trigger(S3Trigger.EVENTS)
                                 .actionName("S3FrontEndSource")
                                 .build()))
-                        .projectName("FrontEndSynth")
+                        .additionalInputs(preSteps)
+                        .projectName("BuildFrontendInfrastructureProject")
+                        .build()))
+                .codeBuildDefaults(CodeBuildOptions.builder()
                         .buildEnvironment(BuildEnvironment.builder()
                                 .computeType(LARGE)
                                 .buildImage(AMAZON_LINUX_2_ARM)
                                 .build())
-                        .build()))
+                        .build())
                 .build();
 
         List<Step> preProStep = new ArrayList<>();
