@@ -239,7 +239,7 @@ Resources:
         - !Sub arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:2
       Environment:
         Variables:
-          CollectionName: !Sub "${AWS::StackName}-collection"
+          CollectionName: !Join ["-", ["collection", !Select [0, !Split [-, !Select [2, !Split [/, !Ref AWS::StackId ]]]]]]
           TableName: !Join ["-", ["face", "id", !Select [0, !Split [-, !Select [2, !Split [/, !Ref AWS::StackId ]]]]]]
           LAMBDA_INSIGHTS_LOG_LEVEL: info
       Policies:
