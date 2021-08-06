@@ -8,7 +8,7 @@ phases:
       - echo Build started on `date`
       - cd $CODEBUILD_SRC_DIR
       - cd frontend
-      - npm install
+      - npm install --global npm && npm ci
     finally:
       - pwd
   build:
