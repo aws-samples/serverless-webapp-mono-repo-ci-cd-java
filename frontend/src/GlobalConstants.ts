@@ -1,7 +1,19 @@
-export const GLOBAL_CONSTANTS = {
-    'FIND_IMAGE': `https://f6i3hg4b16.execute-api.eu-west-1.amazonaws.com/Prod/recognise`,
-    'UPLOAD_URL': `https://f6i3hg4b16.execute-api.eu-west-1.amazonaws.com/Prod/upload-url`,
-};
+type Config = {
+    FIND_IMAGE: string,
+    UPLOAD_URL: string,
+}
+
+export const GLOBAL_CONSTANTS = new Map<string, Config>();
+
+GLOBAL_CONSTANTS.set('JAVA', {
+        'FIND_IMAGE': `https://f6i3hg4b16.execute-api.eu-west-1.amazonaws.com/Prod/recognise`,
+        'UPLOAD_URL': `https://f6i3hg4b16.execute-api.eu-west-1.amazonaws.com/Prod/upload-url`,
+    });
+
+GLOBAL_CONSTANTS.set('PYTHON', {
+    'FIND_IMAGE': `https://2rb53n6axc.execute-api.eu-west-1.amazonaws.com/Prod/recognise`,
+    'UPLOAD_URL': `https://2rb53n6axc.execute-api.eu-west-1.amazonaws.com/Prod/upload-url`,
+});
 
 export const Links_List = [
     {label: 'Source code for the project', link: 'https://github.com/aws-samples/serverless-webapp-mono-repo-ci-cd-java'},

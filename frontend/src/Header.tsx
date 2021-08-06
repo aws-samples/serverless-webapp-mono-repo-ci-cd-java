@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {useHistory} from "react-router";
 import {makeStyles} from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -7,15 +7,21 @@ import {
     AppBar,
     Divider,
     Drawer,
-    IconButton, List,
+    FormControl,
+    FormHelperText,
+    IconButton,
+    InputLabel,
+    List,
     ListItem,
     ListItemText,
+    NativeSelect,
     Toolbar,
     Typography
 } from "@material-ui/core";
 
 import {Links_List} from "./GlobalConstants";
 import {Home} from "@material-ui/icons";
+import {BackendContext} from "./App";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -35,12 +41,21 @@ const useStyles = makeStyles((theme) => ({
         ...theme.mixins.toolbar,
         justifyContent: 'space-between',
     },
+    formControl: {
+        margin: theme.spacing(1),
+        minWidth: 120,
+    }
 }));
 
 export default function ButtonAppBar() {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = React.useState<boolean>(false);
     const history = useHistory();
+    const [backend, dispatch] = useContext(BackendContext);
+
+    const handleChange = (event: React.ChangeEvent<{ value: string }>) => {
+        dispatch({ type: 'SET_BACKEND', payload: event.target.value });
+    };
 
     const openMenu = (event: any) => {
         setAnchorEl(event.currentTarget);
@@ -82,6 +97,7 @@ export default function ButtonAppBar() {
                                 <div className='drawer-item' key={i}>
                                     <ListItem button onClick={() => redirectToLink(link.link)}>
                                         <ListItemText primary={link.label} />
+
                                     </ListItem>
                                 </div>
                             )})}
@@ -91,6 +107,16 @@ export default function ButtonAppBar() {
                     <Typography variant="h6" className={classes.title}>
                         Facial Recognition
                     </Typography>
+                    <FormControl className={classes.formControl}>
+                        <InputLabel htmlFor="age-native-helper">Backend</InputLabel>
+                        <NativeSelect
+                            value={backend}
+                            onChange={handleChange}>
+                            <option value={'JAVA'}>Java</option>
+                            <option value={'PYTHON'}>Python</option>
+                        </NativeSelect>
+                        <FormHelperText>Which backend to use</FormHelperText>
+                    </FormControl>
                     <IconButton color="inherit" onClick={redirectToHome}>
                         <Home />
                     </IconButton>

@@ -1,14 +1,16 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import ImageUploader from "react-images-upload";
 import {Button, CircularProgress} from "@material-ui/core";
 import {GLOBAL_CONSTANTS} from "./GlobalConstants";
 import FormButtons from "./FormButtons";
+import {BackendContext} from "./App";
 
 const FindImage: React.FunctionComponent = () => {
     const [pictureDataUrl, setPictureDataUrl] = useState<string>('');
     const [name, setName] = useState<string>();
     const [message, setMessage] = useState<string>();
     const [loading, setLoading] = useState<boolean>();
+    const [backend] = useContext(BackendContext);
 
     const handleImageChange = (picture:File[], pictureDataUrl: string[]) => {
         setPictureDataUrl(pictureDataUrl[0]);
@@ -26,7 +28,7 @@ const FindImage: React.FunctionComponent = () => {
         resetMessage();
         setLoading(true)
         if(pictureDataUrl) {
-            fetch(GLOBAL_CONSTANTS.FIND_IMAGE, {
+            fetch(GLOBAL_CONSTANTS.get(backend)?.FIND_IMAGE as string, {
                 method: 'POST',
                 body: pictureDataUrl.split('base64,')[1],
             })

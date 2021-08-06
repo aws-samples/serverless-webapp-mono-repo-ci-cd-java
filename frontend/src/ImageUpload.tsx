@@ -1,9 +1,10 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import ImageUploader from "react-images-upload";
 import {Button, CircularProgress, TextField} from "@material-ui/core";
 
 import {GLOBAL_CONSTANTS} from "./GlobalConstants";
 import FormButtons from "./FormButtons";
+import {BackendContext} from "./App";
 
 type DataToGetUrl = {
     name: string,
@@ -21,6 +22,7 @@ const ImageUpload: React.FunctionComponent = () => {
     const [name, setName] = useState<string>('');
     const [message, setMessage] = useState<string>();
     const [loading, setLoading] = useState<boolean>();
+    const [backend] = useContext(BackendContext);
 
     const handleImageChange = (picture:File[]) => {
         setMessage(undefined);
@@ -43,7 +45,7 @@ const ImageUpload: React.FunctionComponent = () => {
     };
 
     const getUrl = (dataToGetUrl: DataToGetUrl) => {
-        fetch(`${GLOBAL_CONSTANTS.UPLOAD_URL}?content-type=${dataToGetUrl.type}&file-extension=.${dataToGetUrl.extension}&person-name=${dataToGetUrl.name}`)
+        fetch(`${GLOBAL_CONSTANTS.get(backend)?.UPLOAD_URL}?content-type=${dataToGetUrl.type}&file-extension=.${dataToGetUrl.extension}&person-name=${dataToGetUrl.name}`)
             .then(res => res.json())
             .then(
                 (result) => {
