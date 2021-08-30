@@ -42,7 +42,7 @@
     "@types/react-router-dom": "^5.1.5",
     "node-sass": "^6.0.1",
     "react-images-upload": "^1.2.8",
-    "react-router": "^5.2.0",
+    "react-router": "^5.2.1",
     "react-router-dom": "^5.2.0"
   },
   "resolutions": {
