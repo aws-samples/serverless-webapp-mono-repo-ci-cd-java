@@ -130,7 +130,7 @@ public class FrontEndCdkPipelineStack extends Stack {
 
         CodePipeline codePipeline = CodePipeline.Builder.create(this, "WebApplicationFrontEndCdkPipeline")
                 .pipelineName("WebApplicationFrontEndCdkPipeline")
-                .crossAccountKeys(false)
+                .crossAccountKeys(true)
                 // Self mutation is very much needed here coz of https://github.com/aws/aws-cdk/issues/9080.
                 // Else the publishing actions might try to publish obsolete hash
                 .selfMutation(true)
