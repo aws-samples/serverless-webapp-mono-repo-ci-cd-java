@@ -25,6 +25,7 @@ public class ApplicationStage extends Stage {
                                 .map(StageProps::getEnv)
                                 .map(Environment::getRegion)
                                 .orElse("eu-west-1"))
+                        .account(props.getEnv().getAccount())
                         .build())
                 .build());
     }

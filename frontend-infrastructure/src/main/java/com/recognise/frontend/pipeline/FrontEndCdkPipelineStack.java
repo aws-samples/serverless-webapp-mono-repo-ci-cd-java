@@ -172,6 +172,16 @@ public class FrontEndCdkPipelineStack extends Stack {
         codePipeline.addStage(new ApplicationStage(this, "prod", software.amazon.awscdk.core.StageProps.builder()
                 .env(Environment.builder()
                         .region(props.getEnv().getRegion())
+                        .account(props.getEnv().getAccount())
+                        .build())
+                .build()), AddStageOpts.builder()
+                .pre(preProStep)
+                .build());
+
+        codePipeline.addStage(new ApplicationStage(this, "post-prod", software.amazon.awscdk.core.StageProps.builder()
+                .env(Environment.builder()
+                        .region(props.getEnv().getRegion())
+                        .account("725843547456")
                         .build())
                 .build()), AddStageOpts.builder()
                 .pre(preProStep)
