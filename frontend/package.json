@@ -39,7 +39,7 @@
   "devDependencies": {
     "@material-ui/core": "^4.10.2",
     "@material-ui/icons": "^4.9.1",
-    "@types/react-router-dom": "^5.1.5",
+    "@types/react-router-dom": "^5.1.9",
     "node-sass": "^6.0.1",
     "react-images-upload": "^1.2.8",
     "react-router": "^5.2.0",
