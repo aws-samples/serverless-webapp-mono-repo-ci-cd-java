@@ -182,9 +182,9 @@ If you don't want to host on a custom domain, leave `cert_domain` as empty strin
   cd frontend/
 ```
 ```
-  yarn install
+  npm install
  
-  yarn build
+  npm run build
 ```
 
 - Build frontend infrastructure
