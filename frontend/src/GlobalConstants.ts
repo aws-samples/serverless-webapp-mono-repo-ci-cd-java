@@ -6,8 +6,8 @@ type Config = {
 export const GLOBAL_CONSTANTS = new Map<string, Config>();
 
 GLOBAL_CONSTANTS.set('JAVA', {
-        'FIND_IMAGE': `https://f6i3hg4b16.execute-api.eu-west-1.amazonaws.com/Prod/recognise`,
-        'UPLOAD_URL': `https://f6i3hg4b16.execute-api.eu-west-1.amazonaws.com/Prod/upload-url`,
+        'FIND_IMAGE': `https://m7ld6m2q09.execute-api.eu-west-1.amazonaws.com/Prod/recognise`,
+        'UPLOAD_URL': `https://m7ld6m2q09.execute-api.eu-west-1.amazonaws.com/Prod/upload-url`,
     });
 
 GLOBAL_CONSTANTS.set('PYTHON', {

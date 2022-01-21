@@ -6,7 +6,7 @@
     "frontend_infra_build_spec": "frontend-infrastructure/buildspec.yml",
     "frontend_infra_deploy_spec": "frontend-infrastructure/deployspec.yml",
     "approval_emails": "",
-    "owner": "pankajagrawal16",
+    "owner": "mriccia",
     "repo": "serverless-webapp-mono-repo-ci-cd-java",
     "cert_domain": "",
     "@aws-cdk/core:newStyleStackSynthesis": true
