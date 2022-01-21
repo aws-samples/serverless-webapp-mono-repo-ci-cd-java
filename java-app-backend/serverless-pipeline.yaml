@@ -7,7 +7,7 @@ Parameters:
   GitHubOwner:
     Description: GitHub username owning the repo
     Type: String
-    Default: 'pankajagrawal16'
+    Default: 'mriccia'
   GitHubRepo:
     Description: GitHub repo name
     Type: String
