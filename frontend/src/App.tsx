@@ -6,6 +6,7 @@ import './App.scss';
 import ImageUpload from "./ImageUpload";
 import FindImage from "./FindImage";
 import Home from "./Home";
+import ListFaces from "./ListFaces";
 import {backendReducer} from "./backendReducer";
 
 const initBackend = 'JAVA';
@@ -23,6 +24,7 @@ const App: React.FunctionComponent = () => {
                         <Route exact path="/" component={Home}/>
                         <Route path="/register" component={ImageUpload}/>
                         <Route path="/find" component={FindImage}/>
+                        <Route path="/list" component={ListFaces}/>
                     </Switch>
                 </Router>
             </div>

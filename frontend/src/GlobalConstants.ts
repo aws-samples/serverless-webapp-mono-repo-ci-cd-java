@@ -1,6 +1,7 @@
 type Config = {
     FIND_IMAGE: string,
     UPLOAD_URL: string,
+    LIST_FACES: string,
 }
 
 export const GLOBAL_CONSTANTS = new Map<string, Config>();
@@ -8,11 +9,13 @@ export const GLOBAL_CONSTANTS = new Map<string, Config>();
 GLOBAL_CONSTANTS.set('JAVA', {
         'FIND_IMAGE': `https://m7ld6m2q09.execute-api.eu-west-1.amazonaws.com/Prod/recognise`,
         'UPLOAD_URL': `https://m7ld6m2q09.execute-api.eu-west-1.amazonaws.com/Prod/upload-url`,
+        'LIST_FACES': `/list-faces.json`,
     });
 
 GLOBAL_CONSTANTS.set('PYTHON', {
     'FIND_IMAGE': `https://2rb53n6axc.execute-api.eu-west-1.amazonaws.com/Prod/recognise`,
     'UPLOAD_URL': `https://2rb53n6axc.execute-api.eu-west-1.amazonaws.com/Prod/upload-url`,
+    'LIST_FACES': `https://2rb53n6axc.execute-api.eu-west-1.amazonaws.com/Prod/list-faces`,
 });
 
 export const Links_List = [

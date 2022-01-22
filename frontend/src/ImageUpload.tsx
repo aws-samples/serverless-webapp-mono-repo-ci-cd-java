@@ -93,7 +93,7 @@ const ImageUpload: React.FunctionComponent = () => {
 
     return (
         <div className='image-form'>
-            <FormButtons registerColor='primary' findColor='default'/>
+            <FormButtons registerColor='primary' findColor='default' listColor='default'/>
             <TextField
                 autoFocus
                 id="name"

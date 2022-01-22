@@ -6,9 +6,10 @@ import ButtonAppBar from "./Header";
 type FormButton = {
     registerColor: 'default' | 'inherit' | 'primary' | 'secondary',
     findColor: 'default' | 'inherit' | 'primary' | 'secondary',
+    listColor: 'default' | 'inherit' | 'primary' | 'secondary',
 }
 
-const FormButtons: React.FunctionComponent<FormButton> = ({registerColor, findColor}) => {
+const FormButtons: React.FunctionComponent<FormButton> = ({registerColor, findColor, listColor}) => {
     const history = useHistory();
 
     const handleShowRegister = () => {
@@ -18,6 +19,9 @@ const FormButtons: React.FunctionComponent<FormButton> = ({registerColor, findCo
     const handleShowFind = () => {
         history.push('/find');
     };
+    const handleShowList = () => {
+        history.push('/list');
+    };
 
     return (
         <>
@@ -26,8 +30,11 @@ const FormButtons: React.FunctionComponent<FormButton> = ({registerColor, findCo
                 <Button href='' variant="contained" color={registerColor} onClick={handleShowRegister} className='action-buttons__register'>
                     Register Your Face
                 </Button>
-                <Button href='' variant="contained" color={findColor} onClick={handleShowFind}>
+                <Button href='' variant="contained" color={findColor} onClick={handleShowFind} className='action-buttons__register'>
                     Find Your Face
+                </Button>
+                <Button href='' variant="contained" color={listColor} onClick={handleShowList}>
+                    List Faces
                 </Button>
             </div>
         </>

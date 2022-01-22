@@ -50,7 +50,7 @@ const FindImage: React.FunctionComponent = () => {
 
     return (
         <div className='image-form'>
-            <FormButtons registerColor='default' findColor='primary'/>
+            <FormButtons registerColor='default' findColor='primary' listColor='default'/>
             <ImageUploader
                 withIcon={true}
                 onChange={handleImageChange}

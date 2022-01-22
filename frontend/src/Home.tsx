@@ -5,7 +5,7 @@ import FormButtons from "./FormButtons";
 function Home() {
     return (
         <div>
-            <FormButtons registerColor='default' findColor='default'/>
+            <FormButtons registerColor='default' findColor='default' listColor='default'/>
             <Container maxWidth="md">
                 {/*<div className='home-container'>
                     hello
