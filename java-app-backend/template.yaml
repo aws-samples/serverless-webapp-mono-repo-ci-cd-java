@@ -288,6 +288,34 @@ Resources:
             Path: '/upload-url'
             Method: get
 
+  ListFacesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: Function to retrieve all the faces that have been indexed
+      CodeUri: BackendFunction
+      Handler: com.webapp.function.ListFacesHandler::handleRequest
+      Runtime: java8.al2
+      MemorySize: 1536
+      AutoPublishAlias: live
+      Layers:
+        - !Sub arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:2
+      Environment:
+        Variables:
+          CloudFrontDistribution: !GetAtt publicDistribution.DomainName
+          TableName: !Join ["-", ["face", "id", !Select [0, !Split [-, !Select [2, !Split [/, !Ref AWS::StackId ]]]]]]
+          POWERTOOLS_SERVICE_NAME: ListFacesHandler
+          LAMBDA_INSIGHTS_LOG_LEVEL: info
+      Policies:
+        - CloudWatchLambdaInsightsExecutionRolePolicy
+        - DynamoDBReadPolicy:
+            TableName: !Join ["-", ["face", "id", !Select [0, !Split [-, !Select [2, !Split [/, !Ref AWS::StackId ]]]]]]
+      Events:
+        HttpPost:
+          Type: Api
+          Properties:
+            Path: '/list-faces'
+            Method: get
+
   ImageSearch:
     Type: AWS::Serverless::Function
     Properties:
