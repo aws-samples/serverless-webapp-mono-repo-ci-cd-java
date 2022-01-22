@@ -59,7 +59,7 @@ public class IndexImageHandler implements RequestHandler<S3EventNotification, In
                 putMetadata("full_name", fullname);
                 putAnnotation("full_name", fullname);
 
-                updateIndexDetails(faceId, fullname);
+                updateIndexDetails(faceId, fullname, bucketKey);
             }
 
             return indexFacesResponse;
@@ -88,7 +88,8 @@ public class IndexImageHandler implements RequestHandler<S3EventNotification, In
 
     @Tracing
     private void updateIndexDetails(final String faceId,
-                                    final String fullname) {
+                                    final String fullname,
+                                    final String bucketKey) {
         Map<String, AttributeValue> item = new HashMap<>();
 
         item.put("RekognitionId", AttributeValue.builder()
@@ -97,6 +98,10 @@ public class IndexImageHandler implements RequestHandler<S3EventNotification, In
 
         item.put("FullName", AttributeValue.builder()
                 .s(fullname)
+                .build());
+
+        item.put("BucketKey", AttributeValue.builder()
+                .s(bucketKey)
                 .build());
 
         PutItemResponse putItemResponse = dynamoDbClient.putItem(PutItemRequest.builder()
