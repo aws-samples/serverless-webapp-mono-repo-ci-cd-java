@@ -19,7 +19,7 @@ function ListFaces() {
             .then(res => res.json())
             .then((result) => {
                     if (!isCancelled.current) {
-                        setItems(result.body)
+                        setItems(result)
                     }
                 },
                 (error) => {

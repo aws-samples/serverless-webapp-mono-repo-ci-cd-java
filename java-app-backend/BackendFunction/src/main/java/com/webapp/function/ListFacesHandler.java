@@ -22,7 +22,7 @@ public class ListFacesHandler implements RequestHandler<APIGatewayProxyRequestEv
 
     private static final String TABLE_NAME = System.getenv("TableName");
     private static final String CF_DISTRIBUTION = System.getenv("CloudFrontDistribution");
-    private static final String PLACEHOLDER_URL = CF_DISTRIBUTION + "/index/static/aws_logo.png" ;
+    private static final String PLACEHOLDER_URL = "https://" + CF_DISTRIBUTION + "/index/static/aws_logo.png" ;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final DynamoDbClient dynamoDbClient = DynamoDbClient.create();
 
