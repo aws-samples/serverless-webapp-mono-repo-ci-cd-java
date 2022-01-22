@@ -65,7 +65,7 @@ function ListFaces() {
 
                 </Grid>
             </Container>
-            <pre>{JSON.stringify(items)}</pre>
+            {/*<pre>{JSON.stringify(items)}</pre>*/}
         </div>
     );
 }
