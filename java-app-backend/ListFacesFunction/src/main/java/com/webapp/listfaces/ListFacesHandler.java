@@ -1,35 +1,26 @@
-package com.webapp.function;
+package com.webapp.listfaces;
 
 import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.lambda.powertools.logging.Logging;
-import software.amazon.lambda.powertools.tracing.Tracing;
 
 import java.util.*;
 
-import static software.amazon.lambda.powertools.tracing.TracingUtils.putAnnotation;
-import static software.amazon.lambda.powertools.tracing.TracingUtils.putMetadata;
 
-public class ListFacesHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
-    private static final Logger LOG = LogManager.getLogger(ListFacesHandler.class);
+public class ListFacesHandler implements RequestHandler<Object, APIGatewayProxyResponseEvent> {
 
     private static final String TABLE_NAME = System.getenv("TableName");
     private static final String CF_DISTRIBUTION = System.getenv("CloudFrontDistribution");
-    private static final String PLACEHOLDER_URL = "https://" + CF_DISTRIBUTION + "/index/static/aws_logo.png" ;
+    private static final String PLACEHOLDER_URL = "https://" + CF_DISTRIBUTION + "/index/static/aws_logo.png";
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    private static final DynamoDbClient dynamoDbClient = DynamoDbClient.create();
 
     @Override
-    @Logging(logEvent = true, samplingRate = 0.5)
-    @Tracing(namespace = "ListFaces")
-    public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
+    public APIGatewayProxyResponseEvent handleRequest(Object input, Context context) {
+
+        final LambdaLogger logger = context.getLogger();
 
         Map<String, String> headers = new HashMap<>();
         headers.put("Access-Control-Allow-Origin", "*");
@@ -37,7 +28,8 @@ public class ListFacesHandler implements RequestHandler<APIGatewayProxyRequestEv
         APIGatewayProxyResponseEvent apiGatewayProxyResponseEvent = new APIGatewayProxyResponseEvent()
                 .withHeaders(headers);
 
-        LOG.debug("Listing all Faces");
+        logger.log("Listing all Faces");
+        //TODO Get the List of indexed faces from DynamoDB
         final List<FacePojo> list = new ArrayList<FacePojo>(Collections.nCopies(5, new FacePojo(PLACEHOLDER_URL, "Placeholder")));
 
         try {
@@ -45,9 +37,11 @@ public class ListFacesHandler implements RequestHandler<APIGatewayProxyRequestEv
                     .withStatusCode(200)
                     .withBody(OBJECT_MAPPER.writeValueAsString(list));
         } catch (JsonProcessingException e) {
-            LOG.error("Failed sending response", e);
-            throw new RuntimeException(e);
+            logger.log("Failed sending response" + e.toString());
+            throw new RuntimeException("Something went wrong");
         }
     }
 
 }
+
+

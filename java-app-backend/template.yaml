@@ -292,21 +292,24 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Description: Function to retrieve all the faces that have been indexed
-      CodeUri: BackendFunction
-      Handler: com.webapp.function.ListFacesHandler::handleRequest
+      CodeUri: ListFacesFunction
+      Handler: com.webapp.listfaces.ListFacesHandler::handleRequest
       Runtime: java8.al2
       MemorySize: 1536
       AutoPublishAlias: live
       Layers:
-        - !Sub arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:2
+        - !Sub arn:aws:lambda:${AWS::Region}:157417159150:layer:AWSCodeGuruProfilerJavaAgentLayer:5
       Environment:
         Variables:
           CloudFrontDistribution: !GetAtt publicDistribution.DomainName
           TableName: !Join ["-", ["face", "id", !Select [0, !Split [-, !Select [2, !Split [/, !Ref AWS::StackId ]]]]]]
-          POWERTOOLS_SERVICE_NAME: ListFacesHandler
-          LAMBDA_INSIGHTS_LOG_LEVEL: info
+          AWS_CODEGURU_PROFILER_GROUP_NAME: "MyApplication"
+          AWS_CODEGURU_PROFILER_TARGET_REGION: !Ref "AWS::Region"
+          AWS_CODEGURU_PROFILER_HEAP_SUMMARY_ENABLED: "true"
+          JAVA_TOOL_OPTIONS: "-javaagent:/opt/codeguru-profiler-java-agent-standalone.jar"
       Policies:
         - CloudWatchLambdaInsightsExecutionRolePolicy
+        - "arn:aws:iam::aws:policy/AmazonCodeGuruProfilerAgentAccess"
         - DynamoDBReadPolicy:
             TableName: !Join ["-", ["face", "id", !Select [0, !Split [-, !Select [2, !Split [/, !Ref AWS::StackId ]]]]]]
       Events:
