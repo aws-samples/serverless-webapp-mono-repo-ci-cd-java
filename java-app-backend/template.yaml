@@ -257,7 +257,7 @@ Resources:
         Name: RekognitionId
         Type: String
       ProvisionedThroughput:
-        ReadCapacityUnits: 1
+        ReadCapacityUnits: 10000
         WriteCapacityUnits: 1
       TableName: !Join ["-", ["face", "id", !Select [0, !Split [-, !Select [2, !Split [/, !Ref AWS::StackId ]]]]]]
 
