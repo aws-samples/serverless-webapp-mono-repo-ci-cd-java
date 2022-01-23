@@ -1,5 +1,10 @@
 package com.webapp.listfaces;
 
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ScanRequest;
+import com.amazonaws.services.dynamodbv2.model.ScanResult;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -30,7 +35,17 @@ public class ListFacesHandler implements RequestHandler<Object, APIGatewayProxyR
 
         logger.log("Listing all Faces");
         //TODO Get the List of indexed faces from DynamoDB
-        final List<FacePojo> list = new ArrayList<FacePojo>(Collections.nCopies(5, new FacePojo(PLACEHOLDER_URL, "Placeholder")));
+        final List<FacePojo> list = new ArrayList<FacePojo>();
+
+        AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().build();
+        ScanRequest scanRequest = new ScanRequest().withTableName(TABLE_NAME);
+        ScanResult result = client.scan(scanRequest);
+
+        for (Map<String, AttributeValue> item : result.getItems()){
+            String fullName = item.get("FullName").getS();
+            String imageUrl = "https://" + CF_DISTRIBUTION + "/" + item.get("BucketKey").getS();
+            list.add(new FacePojo(imageUrl, fullName));
+        }
 
         try {
             return apiGatewayProxyResponseEvent
