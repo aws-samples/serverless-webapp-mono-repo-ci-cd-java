@@ -18,7 +18,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        node-version: [10.x]
+        node-version: [14.x]
     name: Node ${{ matrix.java }}
     env:
       OS: ${{ matrix.os }}
