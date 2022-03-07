@@ -9,9 +9,9 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <aws.java.sdk.version>2.17.133</aws.java.sdk.version>
+        <aws.java.sdk.version>2.17.143</aws.java.sdk.version>
         <log4j.version>2.13.2</log4j.version>
-        <powertools.version>1.11.0</powertools.version>
+        <powertools.version>1.12.0</powertools.version>
     </properties>
 
     <dependencyManagement>
@@ -60,7 +60,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.13.1</version>
+            <version>2.13.2</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.lambda</groupId>
