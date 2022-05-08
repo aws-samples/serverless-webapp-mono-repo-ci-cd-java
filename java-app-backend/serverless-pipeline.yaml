@@ -46,14 +46,12 @@ Resources:
 
   ArtifactBucketPolicy:
     Type: AWS::S3::BucketPolicy
-
     Properties:
       Bucket: !Ref Artifacts
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
-          -
-            Sid: "ServerlessApp"
+          - Sid: "ServerlessApp"
             Effect: Allow
             Action:
               - s3:GetObject
@@ -62,6 +60,16 @@ Resources:
             Principal:
               Service:
                 - serverlessrepo.amazonaws.com
+          - Sid: AllowSSLRequestsOnly
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:*'
+            Resource:
+              - !Sub arn:${AWS::Partition}:s3:::${Artifacts}
+              - !Sub arn:${AWS::Partition}:s3:::${Artifacts}/*
+            Condition:
+              Bool:
+                'aws:SecureTransport': false
 
   PipelineRole:
     Type: AWS::IAM::Role
@@ -246,6 +254,16 @@ Resources:
             Condition:
               StringEquals:
                 s3:x-amz-acl: bucket-owner-full-control
+          - Sid: AllowSSLRequestsOnly
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:*'
+            Resource:
+              - !Sub arn:${AWS::Partition}:s3:::${AWSCloudTrailBucket}
+              - !Sub arn:${AWS::Partition}:s3:::${AWSCloudTrailBucket}/*
+            Condition:
+              Bool:
+                'aws:SecureTransport': false
 
   AWSCloudTrailBucket:
     Type: AWS::S3::Bucket
