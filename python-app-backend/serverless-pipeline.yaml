@@ -61,6 +61,9 @@ Resources:
             Principal:
               Service:
                 - serverlessrepo.amazonaws.com
+            Condition:
+              StringEquals:
+                aws:SourceAccount: ${AWS::AccountId}
           - Sid: AllowSSLRequestsOnly
             Effect: Deny
             Principal: '*'
@@ -245,6 +248,9 @@ Resources:
                 - cloudtrail.amazonaws.com
             Action: s3:GetBucketAcl
             Resource: !GetAtt AWSCloudTrailBucket.Arn
+            Condition:
+              StringEquals:
+                aws:SourceAccount: ${AWS::AccountId}
           - Sid: AWSCloudTrailWrite
             Effect: Allow
             Principal:
@@ -255,6 +261,7 @@ Resources:
             Condition:
               StringEquals:
                 s3:x-amz-acl: bucket-owner-full-control
+                aws:SourceAccount: ${AWS::AccountId}
           - Sid: AllowSSLRequestsOnly
             Effect: Deny
             Principal: '*'
