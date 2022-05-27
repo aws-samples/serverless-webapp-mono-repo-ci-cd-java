@@ -275,6 +275,16 @@ Resources:
   AWSCloudTrailBucket:
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: ExpireVersions
+            Status: Enabled
+            NoncurrentVersionExpiration:
+              NoncurrentDays: 30
+              NewerNoncurrentVersions: 1
 
   AwsCloudTrail:
     DependsOn:
