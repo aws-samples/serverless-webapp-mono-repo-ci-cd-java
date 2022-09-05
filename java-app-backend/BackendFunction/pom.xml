@@ -9,7 +9,7 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <aws.java.sdk.version>2.17.261</aws.java.sdk.version>
+        <aws.java.sdk.version>2.17.267</aws.java.sdk.version>
         <log4j.version>2.13.2</log4j.version>
         <powertools.version>1.12.3</powertools.version>
     </properties>
@@ -40,17 +40,17 @@
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>rekognition</artifactId>
-            <version>2.17.252</version>
+            <version>2.17.267</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>dynamodb</artifactId>
-            <version>2.17.261</version>
+            <version>2.17.267</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>s3</artifactId>
-            <version>2.17.261</version>
+            <version>2.17.267</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.lambda</groupId>
@@ -60,7 +60,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.13.3</version>
+            <version>2.13.4</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.lambda</groupId>
@@ -80,7 +80,7 @@
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>apache-client</artifactId>
-            <version>2.17.252</version>
+            <version>2.17.267</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
