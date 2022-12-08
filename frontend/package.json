@@ -43,7 +43,7 @@
     "node-sass": "^7.0.3",
     "react-images-upload": "^1.2.8",
     "react-router": "^5.2.0",
-    "react-router-dom": "^5.3.0"
+    "react-router-dom": "^6.4.5"
   },
   "resolutions": {
     "is-svg": "^4.3.1"
